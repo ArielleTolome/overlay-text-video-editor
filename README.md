@@ -142,6 +142,31 @@ console.log(`Rendered ${manifest.totalVideos} videos to ${manifest.batchDirector
 
 ---
 
+## 🤖 Grokbot & AI Agent Skill Integration
+
+This repository includes a standardized `SKILL.md` designed for direct integration with **Grokbot**, **Claude Code**, **Codex**, and autonomous AI coding agents.
+
+### Installing as an Agent Skill
+
+#### 1. For Grokbot & Custom Agent Frameworks:
+Copy or link `SKILL.md` into your agent skills folder:
+```bash
+# In your Grokbot workspace:
+git clone https://github.com/ArielleTolome/overlay-text-video-editor.git ~/.grok/skills/tiktok-caption-video-editor
+```
+
+#### 2. For Claude Code:
+```bash
+git clone https://github.com/ArielleTolome/overlay-text-video-editor.git ~/.claude/skills/tiktok-caption-video-editor
+```
+
+#### 3. Natural Language Prompts Supported by the Skill:
+- *"Cut 10 seconds from these raw videos and add TikTok stroke captions for my $500 grocery card hook."*
+- *"Generate TikTok card overlays for these 5 captions and package them in a zip file organized by date and time."*
+- *"Batch render all captions in both styles with standardized naming conventions."*
+
+---
+
 ## 🧪 Testing
 
 Run the automated test suite:

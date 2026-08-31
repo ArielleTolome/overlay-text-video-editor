@@ -24,8 +24,10 @@ export class OverlayRenderer {
    */
   public async init(): Promise<void> {
     if (!this.browser) {
+      const systemChromePath = this.findSystemChrome();
       this.browser = await puppeteer.launch({
         headless: true,
+        executablePath: systemChromePath || undefined,
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
@@ -35,7 +37,6 @@ export class OverlayRenderer {
         ],
       });
     }
-
     // Load templates
     const defaultStrokePath = path.resolve(process.cwd(), 'templates/tiktok_stroke.html');
     const defaultCardPath = path.resolve(process.cwd(), 'templates/tiktok_card.html');
@@ -114,9 +115,9 @@ export class OverlayRenderer {
       });
 
       await page.setContent(html, {
-        waitUntil: 'networkidle0',
+        waitUntil: 'domcontentloaded',
+        timeout: 10000,
       });
-
       // Ensure fonts and DOM are fully rendered
       await page.evaluate(() => {
         const doc = document as unknown as { fonts?: { ready?: Promise<unknown> } };
@@ -143,7 +144,11 @@ export class OverlayRenderer {
       this.overlayCache.set(cacheKey, targetPath);
       return targetPath;
     } finally {
-      await page.close();
+      try {
+        await page.close();
+      } catch {
+        // ignore closed page errors
+      }
     }
   }
 
@@ -156,6 +161,38 @@ export class OverlayRenderer {
       this.browser = null;
     }
   }
+  /**
+   * Discovers system Chrome or Chromium binary across OS locations.
+   */
+  private findSystemChrome(): string | null {
+    if (process.env.PUPPETEER_EXECUTABLE_PATH && fs.existsSync(process.env.PUPPETEER_EXECUTABLE_PATH)) {
+      return process.env.PUPPETEER_EXECUTABLE_PATH;
+    }
+
+    const candidates = [
+      // macOS
+      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      '/Applications/Chromium.app/Contents/MacOS/Chromium',
+      '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser',
+      '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
+      // Linux
+      '/usr/bin/google-chrome',
+      '/usr/bin/google-chrome-stable',
+      '/usr/bin/chromium',
+      '/usr/bin/chromium-browser',
+      '/snap/bin/chromium',
+      // Windows
+      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+      'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    ];
+
+    for (const candidate of candidates) {
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
+    }
+    return null;
+  }
 
   /**
    * Fallback embedded stroke template if HTML file is missing.
@@ -163,21 +200,11 @@ export class OverlayRenderer {
   private getFallbackStrokeTemplate(): string {
     return `<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8" />
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
-    #stage { width: 1080px; height: 1920px; display: flex; justify-content: center; align-items: flex-start; }
-    .caption-wrapper { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 880px; padding: 0 20px; text-align: center; }
-    .caption-text { color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Montserrat", "Proxima Nova", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"; font-size: 52px; font-weight: 800; line-height: 1.25; -webkit-text-stroke: 4px #000000; paint-order: stroke fill; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 4px 12px rgba(0, 0, 0, 0.6); }
-  </style>
-</head>
-<body>
-  <div id="stage">
-    <div class="caption-wrapper"><div class="caption-text">{{CAPTION}}</div></div>
-  </div>
-</body>
+<head><meta charset="utf-8"/><style>
+body { margin:0; width:1080px; height:1920px; background:transparent; display:flex; justify-content:center; align-items:center; }
+.caption-stroke { color:#fff; font-family:-apple-system,sans-serif; font-size:44px; font-weight:800; -webkit-text-stroke:4px #000; text-align:center; max-width:85%; }
+</style></head>
+<body><div class="caption-stroke" id="caption">{{CAPTION}}</div></body>
 </html>`;
   }
 
@@ -187,22 +214,11 @@ export class OverlayRenderer {
   private getFallbackCardTemplate(): string {
     return `<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8" />
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
-    #stage { width: 1080px; height: 1920px; display: flex; justify-content: center; align-items: flex-start; }
-    .caption-wrapper { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 880px; padding: 0 24px; display: flex; justify-content: center; }
-    .caption-card { background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(16px); border-radius: 28px; padding: 28px 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35); text-align: center; max-width: 840px; }
-    .caption-text { color: #111111; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Montserrat", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"; font-size: 44px; font-weight: 700; line-height: 1.35; }
-  </style>
-</head>
-<body>
-  <div id="stage">
-    <div class="caption-wrapper"><div class="caption-card"><div class="caption-text">{{CAPTION}}</div></div></div>
-  </div>
-</body>
+<head><meta charset="utf-8"/><style>
+body { margin:0; width:1080px; height:1920px; background:transparent; display:flex; justify-content:center; align-items:center; }
+.caption-card { background:rgba(255,255,255,0.96); border-radius:24px; padding:24px 32px; color:#111; font-family:-apple-system,sans-serif; font-size:42px; font-weight:700; text-align:center; max-width:85%; }
+</style></head>
+<body><div class="caption-card" id="caption">{{CAPTION}}</div></body>
 </html>`;
   }
 }
