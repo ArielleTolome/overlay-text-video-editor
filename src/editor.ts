@@ -36,7 +36,7 @@ export class VideoEditor {
       captionsFile: options.captionsFile || '',
       videos: options.videos || [],
       videosDir: options.videosDir || defaultVideosDir,
-      styles: options.styles && options.styles.length > 0 ? options.styles : ['stroke', 'card'],
+      styles: options.styles && options.styles.length > 0 ? options.styles : ['stroke', 'card', 'snapchat', 'comment'],
       outputDir: options.outputDir || defaultOutput,
       organizeByDate: options.organizeByDate !== undefined ? options.organizeByDate : true,
       batchName: options.batchName || '',
@@ -45,12 +45,16 @@ export class VideoEditor {
       concurrency: options.concurrency && options.concurrency > 0 ? options.concurrency : 3,
       strokeTemplatePath: options.strokeTemplatePath || '',
       cardTemplatePath: options.cardTemplatePath || '',
+      snapchatTemplatePath: options.snapchatTemplatePath || '',
+      commentTemplatePath: options.commentTemplatePath || '',
       verbose: options.verbose || false,
     };
 
     this.renderer = new OverlayRenderer({
       strokeTemplatePath: this.options.strokeTemplatePath,
       cardTemplatePath: this.options.cardTemplatePath,
+      snapchatTemplatePath: this.options.snapchatTemplatePath,
+      commentTemplatePath: this.options.commentTemplatePath,
     });
   }
 

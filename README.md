@@ -14,10 +14,11 @@ Batch-renders across $N$ captions $\times$ $M$ raw video cuts $\times$ $K$ overl
 
 ## ✨ Features
 
-- **2 Authentic TikTok Overlay Styles**:
-  1. **Classic TikTok Stroke Style**: High-impact bold white sans-serif with heavy black outline (`-webkit-text-stroke: 4px #000`), drop-shadow, and full emoji support (`😭💀`).
-  2. **TikTok Rounded Card Style**: Semi-translucent elevated white pill/card container (`rgba(255,255,255,0.96)`, `border-radius: 24px`, shadow) with dark typography.
-- **Automated Video Cutter**: Extracts clean 10–15s hook cuts from raw footage and normalizes to **1080x1920 30fps H.264** with synchronized stereo AAC audio.
+- **4 Authentic Social Overlay Styles**:
+  1. **Classic TikTok Stroke Style (`stroke`)**: High-impact bold white sans-serif with heavy black outline (`-webkit-text-stroke: 4.5px #000`), drop-shadow, and full emoji support (`😭💀`).
+  2. **TikTok Rounded Card Style (`card`)**: Semi-translucent elevated white pill/card container (`rgba(255,255,255,0.96)`, `border-radius: 24px`, shadow) with dark typography.
+  3. **Snapchat Translucent Bar Style (`snapchat`)**: Full-width horizontal translucent black banner (`background: rgba(0, 0, 0, 0.65)`, blur) with crisp white text.
+  4. **TikTok Comment Reply Sticker (`comment`)**: Authentic TikTok comment reply sticker with gradient avatar, user handle (`sarah_j`), "Replying to your video" subtitle, and speech bubble tail.
 - **HyperFrames HTML/CSS Composition**: Pixel-perfect web typography and emoji rasterization rendered at 1080x1920 using headless Chrome.
 - **Hardware-Accelerated Compositing**: Multi-threaded FFmpeg pipeline (`h264_videotoolbox` on Apple Silicon / `libx264` on Linux/x86) achieving up to 10x real-time rendering.
 - **Date & Time Organization**: Organizes batches into structured folders (`output/YYYY-MM-DD/batch_HH-MM-SS/`) with automatic `output/latest` symlink and root zip deliverables.

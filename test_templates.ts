@@ -27,8 +27,17 @@ let browserInstance: Browser | null = null;
 
 export async function getBrowser(): Promise<Browser> {
   if (!browserInstance || !browserInstance.connected) {
+    const candidates = [
+      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      '/Applications/Chromium.app/Contents/MacOS/Chromium',
+      '/usr/bin/google-chrome',
+      '/usr/bin/chromium',
+    ];
+    const chromePath = candidates.find((p) => existsSync(p));
+
     browserInstance = await puppeteer.launch({
       headless: true,
+      executablePath: chromePath || undefined,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
@@ -168,9 +177,20 @@ export async function runTests() {
       path: "templates/tiktok_card.html",
       style: "TikTok Rounded Card",
       sampleBg: "analysis/raw_frames/raw3_2s.jpg"
+    },
+    {
+      name: "snapchat",
+      path: "templates/snapchat.html",
+      style: "Snapchat Translucent Bar",
+      sampleBg: "analysis/raw_frames/raw1_2s.jpg"
+    },
+    {
+      name: "tiktok_comment",
+      path: "templates/tiktok_comment.html",
+      style: "TikTok Comment Reply Sticker",
+      sampleBg: "analysis/raw_frames/raw2_2s.jpg"
     }
   ];
-
   const generatedFiles: string[] = [];
 
   for (const tpl of templates) {

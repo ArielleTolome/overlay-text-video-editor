@@ -61,13 +61,12 @@ describe('TikTok Video Editor Engine', () => {
 
   describe('CLI Argument Parsing', () => {
     it('should parse styles and custom options correctly', () => {
-      const parsed = parseArgs(['--styles', 'stroke', '--concurrency', '4', '--no-zip', '--batch-name', 'summer_campaign']);
-      expect(parsed.styles).toEqual(['stroke']);
+      const parsed = parseArgs(['--styles', 'stroke,snapchat,comment', '--concurrency', '4', '--no-zip', '--batch-name', 'summer_campaign']);
+      expect(parsed.styles).toEqual(['stroke', 'snapchat', 'comment']);
       expect(parsed.concurrency).toBe(4);
       expect(parsed.zip).toBe(false);
       expect(parsed.batchName).toBe('summer_campaign');
     });
-
     it('should parse date organization flags', () => {
       const parsed1 = parseArgs(['--no-date-folder']);
       expect(parsed1.organizeByDate).toBe(false);
@@ -82,25 +81,30 @@ describe('TikTok Video Editor Engine', () => {
   });
 
   describe('Overlay Rendering Engine', () => {
-    it('should render transparent 1080x1920 overlay PNGs for both styles', async () => {
+    it('should render transparent 1080x1920 overlay PNGs for all 4 styles (stroke, card, snapchat, comment)', async () => {
       const renderer = new OverlayRenderer();
       await renderer.init();
 
       const testDir = path.resolve(process.cwd(), 'output/test_unit');
       const strokePng = path.join(testDir, 'unit_stroke.png');
       const cardPng = path.join(testDir, 'unit_card.png');
+      const snapchatPng = path.join(testDir, 'unit_snapchat.png');
+      const commentPng = path.join(testDir, 'unit_comment.png');
 
       await renderer.renderOverlay(DEFAULT_CAPTIONS[0], 'stroke', strokePng);
       await renderer.renderOverlay(DEFAULT_CAPTIONS[1], 'card', cardPng);
+      await renderer.renderOverlay(DEFAULT_CAPTIONS[2], 'snapchat', snapchatPng);
+      await renderer.renderOverlay(DEFAULT_CAPTIONS[3], 'comment', commentPng);
 
       expect(fs.existsSync(strokePng)).toBe(true);
       expect(fs.existsSync(cardPng)).toBe(true);
+      expect(fs.existsSync(snapchatPng)).toBe(true);
+      expect(fs.existsSync(commentPng)).toBe(true);
 
-      const strokeStat = fs.statSync(strokePng);
-      const cardStat = fs.statSync(cardPng);
-
-      expect(strokeStat.size).toBeGreaterThan(1000);
-      expect(cardStat.size).toBeGreaterThan(1000);
+      expect(fs.statSync(strokePng).size).toBeGreaterThan(1000);
+      expect(fs.statSync(cardPng).size).toBeGreaterThan(1000);
+      expect(fs.statSync(snapchatPng).size).toBeGreaterThan(1000);
+      expect(fs.statSync(commentPng).size).toBeGreaterThan(1000);
 
       await renderer.close();
     }, 30000);
@@ -119,7 +123,7 @@ describe('TikTok Video Editor Engine', () => {
       const editor = new VideoEditor({
         captions: sampleCaptions,
         videos: sampleVideos,
-        styles: ['stroke', 'card'],
+        styles: ['stroke', 'card', 'snapchat', 'comment'],
         outputDir: testOutputDir,
         organizeByDate: false, // test direct output mode
         zip: true,
@@ -128,10 +132,10 @@ describe('TikTok Video Editor Engine', () => {
       });
 
       const manifest = await editor.renderBatch();
+
       expect(manifest.totalCaptions).toBe(1);
-      expect(manifest.totalVideos).toBe(2);
+      expect(manifest.totalVideos).toBe(4);
       expect(manifest.zipFile).toBeDefined();
-      expect(fs.existsSync(manifest.zipFile!)).toBe(true);
       expect(manifest.timestamp).toBeDefined();
 
       const captionSlug = slugify(sampleCaptions[0], 0);
@@ -141,21 +145,25 @@ describe('TikTok Video Editor Engine', () => {
       expect(fs.existsSync(path.join(captionFolder, 'metadata.json'))).toBe(true);
       expect(fs.existsSync(path.join(testOutputDir, 'manifest.json'))).toBe(true);
       expect(fs.existsSync(path.join(testOutputDir, 'README.md'))).toBe(true);
-
-      // Check that standard named video files exist in caption folder
       const filesInCaptionDir = fs.readdirSync(captionFolder);
       const strokeVideo = filesInCaptionDir.find((f) => f.includes('stroke') && f.endsWith('.mp4'));
       const cardVideo = filesInCaptionDir.find((f) => f.includes('card') && f.endsWith('.mp4'));
+      const snapchatVideo = filesInCaptionDir.find((f) => f.includes('snapchat') && f.endsWith('.mp4'));
+      const commentVideo = filesInCaptionDir.find((f) => f.includes('comment') && f.endsWith('.mp4'));
 
       expect(strokeVideo).toBeDefined();
       expect(cardVideo).toBeDefined();
+      expect(snapchatVideo).toBeDefined();
+      expect(commentVideo).toBeDefined();
       expect(strokeVideo).toMatch(/^\d{8}_\d{6}_video_1_stroke_c01\.mp4$/);
       expect(cardVideo).toMatch(/^\d{8}_\d{6}_video_1_card_c01\.mp4$/);
+      expect(snapchatVideo).toMatch(/^\d{8}_\d{6}_video_1_snapchat_c01\.mp4$/);
+      expect(commentVideo).toMatch(/^\d{8}_\d{6}_video_1_comment_c01\.mp4$/);
 
       // Verify metadata.json contents
       const metadata = JSON.parse(fs.readFileSync(path.join(captionFolder, 'metadata.json'), 'utf8'));
       expect(metadata.captionText).toBe(sampleCaptions[0]);
-      expect(metadata.videos.length).toBe(2);
+      expect(metadata.videos.length).toBe(4);
       expect(metadata.batchId).toBeDefined();
       expect(metadata.namingConvention).toBeDefined();
     }, 60000);

@@ -1,5 +1,4 @@
-export type CaptionStyle = 'stroke' | 'card';
-
+export type CaptionStyle = 'stroke' | 'card' | 'snapchat' | 'comment';
 export interface EditorOptions {
   /** List of captions to process. Defaults to DEFAULT_CAPTIONS */
   captions?: string[];
@@ -9,7 +8,7 @@ export interface EditorOptions {
   videos?: string[];
   /** Directory containing raw video cuts. Defaults to 'assets/raw_cuts' */
   videosDir?: string;
-  /** Styles to generate ('stroke', 'card', or both). Defaults to ['stroke', 'card'] */
+  /** Styles to generate ('stroke', 'card', 'snapchat', 'comment'). Defaults to ['stroke', 'card', 'snapchat', 'comment'] */
   styles?: CaptionStyle[];
   /** Output directory. Defaults to 'output' */
   outputDir?: string;
@@ -27,6 +26,10 @@ export interface EditorOptions {
   strokeTemplatePath?: string;
   /** Path to custom card template HTML */
   cardTemplatePath?: string;
+  /** Path to custom snapchat template HTML */
+  snapchatTemplatePath?: string;
+  /** Path to custom comment template HTML */
+  commentTemplatePath?: string;
   /** Enable verbose console logging */
   verbose?: boolean;
 }

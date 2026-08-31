@@ -96,10 +96,10 @@ bun run start -d ./my_raw_footage -o ./campaign_output
 
 ---
 
-## 🎨 Overlay Styles
+## 🎨 Overlay Styles (4 Authentic Social Styles)
 
 1. **Classic TikTok Stroke Style (`stroke`)**:
-   - High-impact bold white sans-serif with heavy black outline (`-webkit-text-stroke: 4px #000`), drop-shadow, and full emoji support (`😭💀`).
+   - High-impact bold white sans-serif with heavy black outline (`-webkit-text-stroke: 4.5px #000`), drop-shadow, and full emoji support (`😭💀`).
    - Vertical position: upper-chest height (`top: 35-42%`), centered horizontally.
    - Ideal for: High-energy hooks, viral organic TikTok content, UGC reactions.
 
@@ -108,7 +108,15 @@ bun run start -d ./my_raw_footage -o ./campaign_output
    - Vertical position: upper-chest height (`top: 35-42%`), centered horizontally.
    - Ideal for: Clean aesthetic ads, TikTok shop callouts, testimonial cards.
 
----
+3. **Snapchat Translucent Bar Style (`snapchat`)**:
+   - Full-width horizontal translucent black banner (`background: rgba(0, 0, 0, 0.65)`, backdrop blur) with clean white sans-serif text.
+   - Vertical position: middle (`top: 48%`), centered across the video.
+   - Ideal for: Native Snapchat/Reels aesthetic, street interviews, casual vlogs, breaking news hooks.
+
+4. **TikTok Comment Reply Sticker (`comment`)**:
+   - Realistic TikTok comment reply card with colored gradient avatar, user handle (`sarah_j`), "Replying to your video" subtitle, dark body text (`#161823`, font-weight 600), and speech bubble tail.
+   - Vertical position: upper-middle (`top: 38%`), centered horizontally.
+   - Ideal for: Question-and-answer hooks, answering objections, social proof UGC, viral curiosity openers.
 
 ## 🏷️ Standardized Naming Conventions
 

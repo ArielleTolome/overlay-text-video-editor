@@ -9,12 +9,16 @@ export interface OverlayRenderOptions {
   size?: string | number;
   strokeTemplatePath?: string;
   cardTemplatePath?: string;
+  snapchatTemplatePath?: string;
+  commentTemplatePath?: string;
 }
 
 export class OverlayRenderer {
   private browser: Browser | null = null;
   private strokeTemplateHtml: string = '';
   private cardTemplateHtml: string = '';
+  private snapchatTemplateHtml: string = '';
+  private commentTemplateHtml: string = '';
   private overlayCache: Map<string, string> = new Map();
 
   constructor(private options: OverlayRenderOptions = {}) {}
@@ -40,21 +44,29 @@ export class OverlayRenderer {
     // Load templates
     const defaultStrokePath = path.resolve(process.cwd(), 'templates/tiktok_stroke.html');
     const defaultCardPath = path.resolve(process.cwd(), 'templates/tiktok_card.html');
+    const defaultSnapchatPath = path.resolve(process.cwd(), 'templates/snapchat.html');
+    const defaultCommentPath = path.resolve(process.cwd(), 'templates/tiktok_comment.html');
 
     const strokePath = this.options.strokeTemplatePath || defaultStrokePath;
     const cardPath = this.options.cardTemplatePath || defaultCardPath;
+    const snapchatPath = this.options.snapchatTemplatePath || defaultSnapchatPath;
+    const commentPath = this.options.commentTemplatePath || defaultCommentPath;
 
-    if (fs.existsSync(strokePath)) {
-      this.strokeTemplateHtml = fs.readFileSync(strokePath, 'utf8');
-    } else {
-      this.strokeTemplateHtml = this.getFallbackStrokeTemplate();
-    }
+    this.strokeTemplateHtml = fs.existsSync(strokePath)
+      ? fs.readFileSync(strokePath, 'utf8')
+      : this.getFallbackStrokeTemplate();
 
-    if (fs.existsSync(cardPath)) {
-      this.cardTemplateHtml = fs.readFileSync(cardPath, 'utf8');
-    } else {
-      this.cardTemplateHtml = this.getFallbackCardTemplate();
-    }
+    this.cardTemplateHtml = fs.existsSync(cardPath)
+      ? fs.readFileSync(cardPath, 'utf8')
+      : this.getFallbackCardTemplate();
+
+    this.snapchatTemplateHtml = fs.existsSync(snapchatPath)
+      ? fs.readFileSync(snapchatPath, 'utf8')
+      : this.getFallbackSnapchatTemplate();
+
+    this.commentTemplateHtml = fs.existsSync(commentPath)
+      ? fs.readFileSync(commentPath, 'utf8')
+      : this.getFallbackCommentTemplate();
   }
 
   /**
@@ -82,7 +94,20 @@ export class OverlayRenderer {
       }
     }
 
-    const templateHtml = style === 'card' ? this.cardTemplateHtml : this.strokeTemplateHtml;
+    let templateHtml = this.strokeTemplateHtml;
+    let compId = 'tiktok-stroke';
+
+    if (style === 'card') {
+      templateHtml = this.cardTemplateHtml;
+      compId = 'tiktok-card';
+    } else if (style === 'snapchat') {
+      templateHtml = this.snapchatTemplateHtml;
+      compId = 'snapchat-bar';
+    } else if (style === 'comment') {
+      templateHtml = this.commentTemplateHtml;
+      compId = 'tiktok-comment';
+    }
+
     const safeCaption = JSON.stringify(caption);
     const escapedCaption = caption
       .replace(/&/g, '&amp;')
@@ -96,16 +121,15 @@ export class OverlayRenderer {
       <script>
         window.CAPTION = ${safeCaption};
         window.addEventListener('DOMContentLoaded', () => {
-          const compId = '${style === 'card' ? 'tiktok-card' : 'tiktok-stroke'}';
-          if (window.__timelines && window.__timelines[compId]) {
+          const activeCompId = '${compId}';
+          if (window.__timelines && window.__timelines[activeCompId]) {
             // Seek to 1.0s to ensure pop-in transition is 100% complete
-            window.__timelines[compId].seek(1.0);
+            window.__timelines[activeCompId].seek(1.0);
           }
         });
       </script>
     `;
     html = html.replace('</head>', `${injectionScript}</head>`);
-
     const page = await this.browser!.newPage();
     try {
       await page.setViewport({
@@ -125,12 +149,12 @@ export class OverlayRenderer {
       });
 
       // Also explicitly seek timeline to hold state
-      await page.evaluate((compId: string) => {
+      await page.evaluate((activeCompId: string) => {
         const win = window as unknown as { __timelines?: Record<string, { seek: (t: number) => void }> };
-        if (win.__timelines && win.__timelines[compId]) {
-          win.__timelines[compId].seek(1.0);
+        if (win.__timelines && win.__timelines[activeCompId]) {
+          win.__timelines[activeCompId].seek(1.0);
         }
-      }, style === 'card' ? 'tiktok-card' : 'tiktok-stroke');
+      }, compId);
 
       const targetPath = outputPath || path.resolve(process.cwd(), `output/temp_${Date.now()}_${Math.random().toString(36).slice(2)}.png`);
       ensureDir(path.dirname(targetPath));
@@ -207,10 +231,6 @@ body { margin:0; width:1080px; height:1920px; background:transparent; display:fl
 <body><div class="caption-stroke" id="caption">{{CAPTION}}</div></body>
 </html>`;
   }
-
-  /**
-   * Fallback embedded card template if HTML file is missing.
-   */
   private getFallbackCardTemplate(): string {
     return `<!DOCTYPE html>
 <html>
@@ -219,6 +239,34 @@ body { margin:0; width:1080px; height:1920px; background:transparent; display:fl
 .caption-card { background:rgba(255,255,255,0.96); border-radius:24px; padding:24px 32px; color:#111; font-family:-apple-system,sans-serif; font-size:42px; font-weight:700; text-align:center; max-width:85%; }
 </style></head>
 <body><div class="caption-card" id="caption">{{CAPTION}}</div></body>
+</html>`;
+  }
+
+  /**
+   * Fallback embedded snapchat template if HTML file is missing.
+   */
+  private getFallbackSnapchatTemplate(): string {
+    return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><style>
+body { margin:0; width:1080px; height:1920px; background:transparent; display:flex; justify-content:center; align-items:center; }
+.snapchat-bar { width:100%; background:rgba(0,0,0,0.65); padding:24px 48px; color:#fff; font-family:-apple-system,sans-serif; font-size:46px; font-weight:500; text-align:center; }
+</style></head>
+<body><div class="snapchat-bar" id="caption">{{CAPTION}}</div></body>
+</html>`;
+  }
+
+  /**
+   * Fallback embedded comment template if HTML file is missing.
+   */
+  private getFallbackCommentTemplate(): string {
+    return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><style>
+body { margin:0; width:1080px; height:1920px; background:transparent; display:flex; justify-content:center; align-items:center; }
+.comment-card { background:#fff; border-radius:24px; padding:24px 28px; box-shadow:0 8px 30px rgba(0,0,0,0.3); max-width:85%; color:#161823; font-family:-apple-system,sans-serif; font-size:40px; font-weight:600; }
+</style></head>
+<body><div class="comment-card" id="caption">{{CAPTION}}</div></body>
 </html>`;
   }
 }

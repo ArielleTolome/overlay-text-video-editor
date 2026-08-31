@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="snapchat-bar" data-width="1080" data-height="1920" />
+  <title>Snapchat Bar Text Overlay</title>
+
+  <!-- GSAP for HyperFrames timeline support -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    #stage {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .snapchat-bar-container {
+      position: absolute;
+      top: var(--caption-top, 48%);
+      left: 0;
+      width: 100%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      padding: 24px 48px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      pointer-events: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .snapchat-text {
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Avenir Next", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+      font-size: var(--caption-font-size, 46px);
+      font-weight: 500;
+      line-height: 1.32;
+      letter-spacing: -0.01em;
+      text-align: center;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      max-width: 980px;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="snapchat-bar">
+    <div class="snapchat-bar-container" id="caption-wrapper">
+      <p class="snapchat-text" id="caption-text">{{CAPTION}}</p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const captionTextEl = document.getElementById('caption-text');
+      const captionWrapperEl = document.getElementById('caption-wrapper');
+
+      // HyperFrames variable resolution
+      if (typeof window !== 'undefined' && window.__hyperframes && typeof window.__hyperframes.getVariables === 'function') {
+        const vars = window.__hyperframes.getVariables();
+        if (vars.caption) {
+          captionTextEl.textContent = vars.caption;
+        }
+        if (vars.fontSize) {
+          document.documentElement.style.setProperty('--caption-font-size', typeof vars.fontSize === 'number' ? vars.fontSize + 'px' : vars.fontSize);
+        }
+        if (vars.top) {
+          document.documentElement.style.setProperty('--caption-top', typeof vars.top === 'number' ? vars.top + '%' : vars.top);
+        }
+      } else if (typeof window !== 'undefined' && window.CAPTION) {
+        captionTextEl.textContent = window.CAPTION;
+      }
+
+      // GSAP timeline animation
+      if (typeof gsap !== 'undefined') {
+        const tl = gsap.timeline({ paused: true });
+        tl.fromTo(
+          captionWrapperEl,
+          { opacity: 0, scaleY: 0.8 },
+          { opacity: 1, scaleY: 1, duration: 0.35, ease: 'power2.out' }
+        );
+
+        if (!window.__timelines) {
+          window.__timelines = {};
+        }
+        window.__timelines['snapchat-bar'] = tl;
+        window.__timelines['snapchat'] = tl;
+      }
+    })();
+  </script>
+</body>
+</html>

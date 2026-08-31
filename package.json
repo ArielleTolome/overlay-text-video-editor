@@ -1,6 +1,6 @@
 {
   "name": "overlay-text-video-editor",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Automated TikTok-style vertical video caption overlay generator using HyperFrames and FFmpeg",
   "module": "index.ts",
   "type": "module",

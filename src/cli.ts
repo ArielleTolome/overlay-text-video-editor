@@ -17,7 +17,7 @@ Options:
   --captions-file, -f <p>  Path to text file (one per line) or JSON array of captions
   --videos <list>          Comma-separated list of raw video file paths
   --videos-dir, -d <path>  Directory containing raw video cuts (default: assets/raw_cuts)
-  --styles <styles>        Overlay styles: 'stroke', 'card', or 'stroke,card' (default: stroke,card)
+  --styles <styles>        Overlay styles: 'stroke', 'card', 'snapchat', 'comment' (default: all)
   --output, -o <dir>       Output directory (default: output)
   --organize-by-date       Organize batches into YYYY-MM-DD/batch_HH-MM-SS folders (default: true)
   --no-date-folder         Disable date/time folder hierarchy and render directly into output dir
@@ -86,8 +86,9 @@ export function parseArgs(args: string[]): EditorOptions & { showHelp?: boolean 
     } else if (arg === '--styles') {
       const val = args[++i];
       if (val) {
+        const validStyles: CaptionStyle[] = ['stroke', 'card', 'snapchat', 'comment'];
         const parsed = val.split(',').map((s) => s.trim().toLowerCase()) as CaptionStyle[];
-        options.styles = parsed.filter((s) => s === 'stroke' || s === 'card');
+        options.styles = parsed.filter((s) => validStyles.includes(s));
       }
     } else if (arg === '--output' || arg === '-o') {
       options.outputDir = args[++i];
