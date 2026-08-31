@@ -1,0 +1,22 @@
+{
+  "name": "overlay-text-video-editor",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "generate": "bun run src/cli.ts",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  },
+  "dependencies": {
+    "@hyperframes/core": "^0.8.20",
+    "hyperframes": "^0.8.20",
+    "puppeteer": "^25.9.0"
+  }
+}

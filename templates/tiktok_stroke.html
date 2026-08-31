@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="tiktok-stroke" data-width="1080" data-height="1920" />
+  <title>TikTok Stroke Caption Overlay</title>
+
+  <!-- Google Fonts: Montserrat fallback -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet" />
+
+  <!-- GSAP for HyperFrames timeline support -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    #stage {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .caption-wrapper {
+      position: absolute;
+      top: var(--caption-top, 42%);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      max-width: 820px;
+      padding: 0 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .caption-text {
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "TikTok Sans", "Montserrat", "Proxima Nova", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+      font-size: var(--caption-font-size, 54px);
+      font-weight: 800;
+      line-height: 1.22;
+      letter-spacing: -0.015em;
+      text-align: center;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      
+      /* Crisp heavy TikTok stroke & shadow */
+      -webkit-text-stroke: 4.5px #000000;
+      paint-order: stroke fill;
+      text-shadow: 
+        0 3px 5px rgba(0, 0, 0, 0.95),
+        0 6px 14px rgba(0, 0, 0, 0.7),
+        0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Optional background video layer for standalone preview mode */
+    #bg-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1080px;
+      height: 1920px;
+      object-fit: cover;
+      z-index: 0;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="tiktok-stroke">
+    <video id="bg-video" muted playsinline></video>
+    <div class="caption-wrapper" id="caption-wrapper">
+      <div class="caption-text" id="caption-text">{{CAPTION}}</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // Dynamic Caption & Parameter Resolution
+      const params = new URLSearchParams(window.location.search);
+      const urlText = params.get("text") || params.get("caption");
+      const urlTop = params.get("top");
+      const urlSize = params.get("size") || params.get("fontSize");
+      const bgVideoSrc = params.get("bg") || params.get("video");
+
+      const captionEl = document.getElementById("caption-text");
+      const wrapperEl = document.getElementById("caption-wrapper");
+      const bgVideoEl = document.getElementById("bg-video");
+
+      // Resolve caption text from window config, URL params, or placeholder
+      let caption = window.CAPTION || (window.COMPOSITION_CONFIG && window.COMPOSITION_CONFIG.caption) || urlText;
+      if (!caption || caption === "{{CAPTION}}") {
+        const rawContent = captionEl.textContent.trim();
+        if (rawContent && rawContent !== "{{CAPTION}}") {
+          caption = rawContent;
+        } else {
+          caption = "lowkey thought this $500 grocery card was fake until my Walmart receipt literally said $0.00 😭💀";
+        }
+      }
+
+      captionEl.textContent = caption;
+
+      // Adjust dynamic styles if specified
+      if (urlTop) {
+        wrapperEl.style.setProperty("--caption-top", urlTop.includes("%") || urlTop.includes("px") ? urlTop : urlTop + "%");
+      }
+      if (urlSize) {
+        captionEl.style.setProperty("--caption-font-size", urlSize.includes("px") ? urlSize : urlSize + "px");
+      }
+
+      // Standalone preview background
+      if (bgVideoSrc) {
+        bgVideoEl.src = bgVideoSrc;
+        bgVideoEl.style.display = "block";
+        bgVideoEl.play().catch(() => {});
+      }
+
+      // Auto-fit font size for long text
+      if (caption.length > 110) {
+        captionEl.style.fontSize = "46px";
+      } else if (caption.length > 80) {
+        captionEl.style.fontSize = "50px";
+      }
+
+      // Register GSAP Timeline for HyperFrames
+      window.__timelines = window.__timelines || {};
+      const duration = parseFloat(params.get("duration") || "15");
+      const tl = gsap.timeline({ paused: true });
+
+      // Subtle pop-in on entrance and hold
+      tl.fromTo(
+        captionEl,
+        { opacity: 0, scale: 0.95 },
+        { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.2)" },
+        0
+      );
+      tl.to(captionEl, { duration: duration - 0.35 }, "+=0");
+
+      window.__timelines["tiktok-stroke"] = tl;
+    })();
+  </script>
+</body>
+</html>
