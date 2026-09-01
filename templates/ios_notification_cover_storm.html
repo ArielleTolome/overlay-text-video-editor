@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <title>iOS Notification Rapid Cover Barrage</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
+    }
+
+    #stage {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Fixed top anchor slot where cards slide down and cover each other */
+    .anchor-slot {
+      position: absolute;
+      top: 110px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 160px;
+      pointer-events: none;
+    }
+
+    .notif-card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(26, 26, 32, 0.92);
+      backdrop-filter: blur(40px) saturate(200%);
+      -webkit-backdrop-filter: blur(40px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 36px;
+      padding: 22px 28px;
+      box-shadow: 
+        0 24px 60px rgba(0, 0, 0, 0.75),
+        0 4px 16px rgba(0, 0, 0, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transform-origin: center top;
+      opacity: 0;
+      transform: translateY(-220px) scale(0.94);
+      will-change: transform, opacity;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .app-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .app-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .app-icon.messages {
+      background: #34c759;
+      box-shadow: 0 2px 8px rgba(52, 199, 89, 0.45);
+    }
+
+    .app-icon.chase {
+      background: #117aca;
+      box-shadow: 0 2px 8px rgba(17, 122, 202, 0.45);
+    }
+
+    .app-icon.instagram {
+      background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+      box-shadow: 0 2px 8px rgba(214, 36, 159, 0.45);
+    }
+
+    .app-icon.snapchat {
+      background: #fffc00;
+      box-shadow: 0 2px 8px rgba(255, 252, 0, 0.4);
+    }
+
+    .app-icon.snapchat svg {
+      fill: #000000;
+    }
+
+    .app-icon.tiktok {
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .app-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: #ffffff;
+    }
+
+    .app-title {
+      color: #a1a1aa;
+      font-size: 21px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .time-stamp {
+      color: #71717a;
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    .body-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .sender {
+      color: #ffffff;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+    }
+
+    .message {
+      color: #f4f4f5;
+      font-size: 28px;
+      font-weight: 500;
+      line-height: 1.28;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <div class="anchor-slot" id="slot"></div>
+  </div>
+
+  <script>
+    // 12 rapid, random notifications sliding down and covering each other every 0.16s - 0.24s
+    const NOTIFICATIONS = [
+      { id: 1, time: 0.30, app: 'Messages', appClass: 'messages', iconSvg: '<path d=\"M12 3C6.477 3 2 6.92 2 11.75c0 2.52 1.22 4.79 3.19 6.36-.18 1.4-.73 2.76-1.64 3.89 1.95 0 3.75-.85 4.95-2.09.49.09.99.14 1.5.14 5.523 0 10-3.92 10-8.75S17.523 3 12 3z\"/>', sender: 'Alex 🔥', text: 'BRO WHERE THE F*** IS THE LINK???' },
+      { id: 2, time: 0.52, app: 'Messages', appClass: 'messages', iconSvg: '<path d=\"M12 3C6.477 3 2 6.92 2 11.75c0 2.52 1.22 4.79 3.19 6.36-.18 1.4-.73 2.76-1.64 3.89 1.95 0 3.75-.85 4.95-2.09.49.09.99.14 1.5.14 5.523 0 10-3.92 10-8.75S17.523 3 12 3z\"/>', sender: 'Mom ❤️', text: 'call me right now how was your Walmart receipt $0.00??' },
+      { id: 3, time: 0.70, app: 'Chase Mobile', appClass: 'chase', iconSvg: '<path d=\"M2 20h20v-2H2v2zm2-4h3v-7H4v7zm6 0h3v-7h-3v7zm6 0h3v-7h-3v7zM2 7l10-5 10 5v2H2V7z\"/>', sender: 'Chase Alert 💳', text: 'Walmart Supercenter: $0.00 (Allowance Discount -$500.00 ✅)' },
+      { id: 4, time: 0.92, app: 'Messages', appClass: 'messages', iconSvg: '<path d=\"M12 3C6.477 3 2 6.92 2 11.75c0 2.52 1.22 4.79 3.19 6.36-.18 1.4-.73 2.76-1.64 3.89 1.95 0 3.75-.85 4.95-2.09.49.09.99.14 1.5.14 5.523 0 10-3.92 10-8.75S17.523 3 12 3z\"/>', sender: 'Tyler 💀', text: 'DUDE IT ACTUALLY WORKED WTF I GOT $500 FREE' },
+      { id: 5, time: 1.12, app: 'Instagram', appClass: 'instagram', iconSvg: '<path d=\"M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z\"/>', sender: 'emily_v ✨', text: 'replied to story: HOW DID YOU GET THIS SEND LINK' },
+      { id: 6, time: 1.32, app: 'Snapchat', appClass: 'snapchat', iconSvg: '<path d=\"M12 2.5c-3.1 0-5.3 2.1-5.3 4.9 0 1.4.6 2.7 1.2 3.8-.3.3-.8.6-1.5.8-.3.1-.5.3-.5.6 0 .4.3.6.7.7.9.2 1.6.6 2.2 1.2-.6 1.4-1.8 2.2-3.8 2.5-.4.1-.7.4-.7.8 0 .4.3.7.7.8 1.4.3 2.6 1 3.5 2.1.2.3.6.4.9.4.2 0 .4-.1.6-.2 1.3-.8 2.6-1.2 4.1-1.2s2.8.4 4.1 1.2c.2.1.4.2.6.2.3 0 .7-.1.9-.4.9-1.1 2.1-1.8 3.5-2.1.4-.1.7-.4.7-.8 0-.4-.3-.7-.7-.8-2-.3-3.2-1.1-3.8-2.5.6-.6 1.3-1 2.2-1.2.4-.1.7-.3.7-.7 0-.3-.2-.5-.5-.6-.7-.2-1.2-.5-1.5-.8.6-1.1 1.2-2.4 1.2-3.8 0-2.8-2.2-4.9-5.3-4.9z\"/>', sender: 'Dave 👻', text: 'did they patch it yet?? send link please bro' },
+      { id: 7, time: 1.52, app: 'Messages', appClass: 'messages', iconSvg: '<path d=\"M12 3C6.477 3 2 6.92 2 11.75c0 2.52 1.22 4.79 3.19 6.36-.18 1.4-.73 2.76-1.64 3.89 1.95 0 3.75-.85 4.95-2.09.49.09.99.14 1.5.14 5.523 0 10-3.92 10-8.75S17.523 3 12 3z\"/>', sender: 'Group Chat (9) 💬', text: 'Jordan: EVERYONE CLAIM IT BEFORE IT DIES' },
+      { id: 8, time: 1.74, app: 'Messages', appClass: 'messages', iconSvg: '<path d=\"M12 3C6.477 3 2 6.92 2 11.75c0 2.52 1.22 4.79 3.19 6.36-.18 1.4-.73 2.76-1.64 3.89 1.95 0 3.75-.85 4.95-2.09.49.09.99.14 1.5.14 5.523 0 10-3.92 10-8.75S17.523 3 12 3z\"/>', sender: 'Sarah 🛒', text: 'literally got 2 carts full for zero dollars thank you sm 🙏' },
+      { id: 9, time: 1.96, app: 'Messages', appClass: 'messages', iconSvg: '<path d=\"M12 3C6.477 3 2 6.92 2 11.75c0 2.52 1.22 4.79 3.19 6.36-.18 1.4-.73 2.76-1.64 3.89 1.95 0 3.75-.85 4.95-2.09.49.09.99.14 1.5.14 5.523 0 10-3.92 10-8.75S17.523 3 12 3z\"/>', sender: 'Unknown Number', text: 'is this the $500 allowance card link from tiktok??' },
+      { id: 10, time: 2.20, app: 'Messages', appClass: 'messages', iconSvg: '<path d=\"M12 3C6.477 3 2 6.92 2 11.75c0 2.52 1.22 4.79 3.19 6.36-.18 1.4-.73 2.76-1.64 3.89 1.95 0 3.75-.85 4.95-2.09.49.09.99.14 1.5.14 5.523 0 10-3.92 10-8.75S17.523 3 12 3z\"/>', sender: 'Marcus 💀', text: 'BRO POST THE LINK IN YOUR BIO RN' },
+      { id: 11, time: 2.42, app: 'Instagram', appClass: 'instagram', iconSvg: '<path d=\"M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z\"/>', sender: 'jessica_m', text: 'replied to story: EVERYONE IN MY FAMILY JUST CLAIMED IT' },
+      { id: 12, time: 2.65, app: 'Messages', appClass: 'messages', iconSvg: '<path d=\"M12 3C6.477 3 2 6.92 2 11.75c0 2.52 1.22 4.79 3.19 6.36-.18 1.4-.73 2.76-1.64 3.89 1.95 0 3.75-.85 4.95-2.09.49.09.99.14 1.5.14 5.523 0 10-3.92 10-8.75S17.523 3 12 3z\"/>', sender: 'Mom ❤️', text: 'I just used it at checkout it literally worked $0.00 😭' }
+    ];
+
+    const slotEl = document.getElementById('slot');
+
+    // Build DOM elements with escalating z-index
+    NOTIFICATIONS.forEach((item, index) => {
+      const card = document.createElement('div');
+      card.className = 'notif-card';
+      card.id = `card-${item.id}`;
+      card.style.zIndex = String(index + 1); // Later cards stack on top of earlier ones
+      card.innerHTML = `
+        <div class="header-row">
+          <div class="app-brand">
+            <div class="app-icon ${item.appClass}">
+              <svg viewBox="0 0 24 24">${item.iconSvg}</svg>
+            </div>
+            <span class="app-title">${item.app}</span>
+          </div>
+          <span class="time-stamp">now</span>
+        </div>
+        <div class="body-row">
+          <div class="sender">${item.sender}</div>
+          <div class="message">${item.text}</div>
+        </div>
+      `;
+      slotEl.appendChild(card);
+    });
+
+    /**
+     * Exact sliding cover-over physics.
+     * At time t, each card that has arrived drops down and covers the card beneath it.
+     */
+    window.seekTo = function (t) {
+      const slideDuration = 0.12; // Ultra-fast 120ms slide-down arrival
+
+      NOTIFICATIONS.forEach((item, index) => {
+        const card = document.getElementById(`card-${item.id}`);
+        if (!card) return;
+
+        const arrival = item.time;
+        const nextArrival = index < NOTIFICATIONS.length - 1 ? NOTIFICATIONS[index + 1].time : Infinity;
+
+        if (t < arrival) {
+          // Not arrived yet: off-screen above
+          card.style.display = 'none';
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(-220px) scale(0.94)';
+        } else {
+          card.style.display = 'flex';
+          const elapsed = t - arrival;
+          const progress = Math.min(1, elapsed / slideDuration);
+
+          // Fast spring drop
+          const c1 = 1.70158;
+          const c3 = c1 + 1;
+          const easeOutBack = progress === 1 ? 1 : 1 + c3 * Math.pow(progress - 1, 3) + c1 * Math.pow(progress - 1, 2);
+
+          const yOffset = (1 - easeOutBack) * -220; // Drops from -220px to 0px
+          const scale = 0.94 + (easeOutBack * 0.06);
+
+          card.style.opacity = '1';
+          card.style.transform = `translateY(${yOffset.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+        }
+      });
+    };
+
+    window.seekTo(0);
+  </script>
+</body>
+</html>
