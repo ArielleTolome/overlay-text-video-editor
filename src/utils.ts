@@ -226,31 +226,66 @@ export async function getVideoMetadata(videoPath: string): Promise<{
   }
 }
 
+export interface CompositeOptions {
+  preset?: string;
+  crf?: number;
+  bitrate?: string;
+  sfxAudioPath?: string;
+  sfxDelaysMs?: number[];
+}
+
 /**
  * Composites a transparent PNG overlay over a base video using FFmpeg.
+ * Optionally mixes in synchronized SFX chimes at specified millisecond delays.
  */
 export async function compositeOverlay(
   videoPath: string,
   overlayImagePath: string,
   outputPath: string,
-  options?: { preset?: string; crf?: number; bitrate?: string }
+  options?: CompositeOptions
 ): Promise<void> {
   ensureDir(path.dirname(outputPath));
 
   const isDarwin = process.platform === 'darwin';
+  const hasSfx = Boolean(options?.sfxAudioPath && fs.existsSync(options.sfxAudioPath) && options.sfxDelaysMs && options.sfxDelaysMs.length > 0);
+
+  const inputArgs: string[] = ['-y', '-i', videoPath, '-i', overlayImagePath];
+  if (hasSfx) {
+    inputArgs.push('-i', options!.sfxAudioPath!);
+  }
+
+  let filterComplex = '[0:v][1:v]overlay=0:0[vout]';
+  let mapArgs: string[] = ['-map', '[vout]'];
+  let audioArgs: string[] = ['-c:a', 'copy'];
+
+  if (hasSfx) {
+    const delays = options!.sfxDelaysMs!;
+    const sfxFilterParts: string[] = [];
+    const mixInputs: string[] = ['[0:a]'];
+
+    delays.forEach((delayMs, idx) => {
+      const label = `sfx${idx + 1}`;
+      sfxFilterParts.push(`[2:a]adelay=${delayMs}|${delayMs},volume=1.8[${label}]`);
+      mixInputs.push(`[${label}]`);
+    });
+
+    const amixStr = `${mixInputs.join('')}amix=inputs=${mixInputs.length}:duration=first:dropout_transition=2[aout]`;
+    filterComplex = `${filterComplex};${sfxFilterParts.join(';')};${amixStr}`;
+    mapArgs = ['-map', '[vout]', '-map', '[aout]'];
+    audioArgs = ['-c:a', 'aac', '-b:a', '192k'];
+  }
 
   if (isDarwin) {
     try {
       const bitrate = options?.bitrate || '10M';
       await runCommand('ffmpeg', [
-        '-y',
-        '-i', videoPath,
-        '-i', overlayImagePath,
-        '-filter_complex', '[0:v][1:v]overlay=0:0',
+        ...inputArgs,
+        '-filter_complex', filterComplex,
+        ...mapArgs,
         '-c:v', 'h264_videotoolbox',
         '-b:v', bitrate,
         '-pix_fmt', 'yuv420p',
-        '-c:a', 'copy',
+        ...audioArgs,
         '-movflags', '+faststart',
         outputPath,
       ]);
@@ -264,20 +299,18 @@ export async function compositeOverlay(
   const crf = options?.crf !== undefined ? String(options.crf) : '19';
 
   await runCommand('ffmpeg', [
-    '-y',
-    '-i', videoPath,
-    '-i', overlayImagePath,
-    '-filter_complex', '[0:v][1:v]overlay=0:0',
+    ...inputArgs,
+    '-filter_complex', filterComplex,
+    ...mapArgs,
     '-c:v', 'libx264',
     '-preset', preset,
     '-crf', crf,
     '-pix_fmt', 'yuv420p',
-    '-c:a', 'copy',
+    ...audioArgs,
     '-movflags', '+faststart',
     outputPath,
   ]);
 }
-
 /**
  * Creates a zip archive of a directory using system zip.
  */

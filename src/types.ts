@@ -1,4 +1,4 @@
-export type CaptionStyle = 'stroke' | 'card' | 'snapchat' | 'comment';
+export type CaptionStyle = 'stroke' | 'card' | 'snapchat' | 'comment' | 'ios-barrage';
 export interface EditorOptions {
   /** List of captions to process. Defaults to DEFAULT_CAPTIONS */
   captions?: string[];
@@ -8,7 +8,7 @@ export interface EditorOptions {
   videos?: string[];
   /** Directory containing raw video cuts. Defaults to 'assets/raw_cuts' */
   videosDir?: string;
-  /** Styles to generate ('stroke', 'card', 'snapchat', 'comment'). Defaults to ['stroke', 'card', 'snapchat', 'comment'] */
+  /** Styles to generate ('stroke', 'card', 'snapchat', 'comment', 'ios-barrage'). Defaults to all */
   styles?: CaptionStyle[];
   /** Output directory. Defaults to 'output' */
   outputDir?: string;
@@ -30,7 +30,10 @@ export interface EditorOptions {
   snapchatTemplatePath?: string;
   /** Path to custom comment template HTML */
   commentTemplatePath?: string;
-  /** Enable verbose console logging */
+  /** Path to custom iOS barrage template HTML */
+  iosBarrageTemplatePath?: string;
+  /** Custom notification audio file path */
+  sfxPath?: string;
   verbose?: boolean;
 }
 

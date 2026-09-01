@@ -11,6 +11,7 @@ export interface OverlayRenderOptions {
   cardTemplatePath?: string;
   snapchatTemplatePath?: string;
   commentTemplatePath?: string;
+  iosBarrageTemplatePath?: string;
 }
 
 export class OverlayRenderer {
@@ -19,8 +20,8 @@ export class OverlayRenderer {
   private cardTemplateHtml: string = '';
   private snapchatTemplateHtml: string = '';
   private commentTemplateHtml: string = '';
+  private iosBarrageTemplateHtml: string = '';
   private overlayCache: Map<string, string> = new Map();
-
   constructor(private options: OverlayRenderOptions = {}) {}
 
   /**
@@ -46,11 +47,13 @@ export class OverlayRenderer {
     const defaultCardPath = path.resolve(process.cwd(), 'templates/tiktok_card.html');
     const defaultSnapchatPath = path.resolve(process.cwd(), 'templates/snapchat.html');
     const defaultCommentPath = path.resolve(process.cwd(), 'templates/tiktok_comment.html');
+    const defaultBarragePath = path.resolve(process.cwd(), 'templates/ios_notification_barrage.html');
 
     const strokePath = this.options.strokeTemplatePath || defaultStrokePath;
     const cardPath = this.options.cardTemplatePath || defaultCardPath;
     const snapchatPath = this.options.snapchatTemplatePath || defaultSnapchatPath;
     const commentPath = this.options.commentTemplatePath || defaultCommentPath;
+    const barragePath = this.options.iosBarrageTemplatePath || defaultBarragePath;
 
     this.strokeTemplateHtml = fs.existsSync(strokePath)
       ? fs.readFileSync(strokePath, 'utf8')
@@ -66,6 +69,10 @@ export class OverlayRenderer {
 
     this.commentTemplateHtml = fs.existsSync(commentPath)
       ? fs.readFileSync(commentPath, 'utf8')
+      : this.getFallbackCommentTemplate();
+
+    this.iosBarrageTemplateHtml = fs.existsSync(barragePath)
+      ? fs.readFileSync(barragePath, 'utf8')
       : this.getFallbackCommentTemplate();
   }
 
@@ -106,8 +113,10 @@ export class OverlayRenderer {
     } else if (style === 'comment') {
       templateHtml = this.commentTemplateHtml;
       compId = 'tiktok-comment';
+    } else if (style === 'ios-barrage') {
+      templateHtml = this.iosBarrageTemplateHtml;
+      compId = 'ios-barrage';
     }
-
     const safeCaption = JSON.stringify(caption);
     const escapedCaption = caption
       .replace(/&/g, '&amp;')

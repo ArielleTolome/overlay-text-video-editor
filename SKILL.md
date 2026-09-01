@@ -96,7 +96,7 @@ bun run start -d ./my_raw_footage -o ./campaign_output
 
 ---
 
-## 🎨 Overlay Styles (4 Authentic Social Styles)
+## 🎨 Overlay Styles (5 Authentic Social Styles)
 
 1. **Classic TikTok Stroke Style (`stroke`)**:
    - High-impact bold white sans-serif with heavy black outline (`-webkit-text-stroke: 4.5px #000`), drop-shadow, and full emoji support (`😭💀`).
@@ -118,6 +118,10 @@ bun run start -d ./my_raw_footage -o ./campaign_output
    - Vertical position: upper-middle (`top: 38%`), centered horizontally.
    - Ideal for: Question-and-answer hooks, answering objections, social proof UGC, viral curiosity openers.
 
+5. **iOS Notification Storm / Barrage (`ios-barrage`)**:
+   - Fast-paced cascading notification bombardment where multiple incoming alerts (Messages, Bank alerts, Group chats) drop from the top of the screen in rapid succession (every 0.6–0.7s) pushing down the stack.
+   - **Authentic Audio Chime**: Automatically synchronizes and mixes real iPhone notification chimes at each rapid alert drop.
+   - Ideal for: "Leaked sauce", viral chaos, FOMO hooks, overwhelming social proof.
 ## 🏷️ Standardized Naming Conventions
 
 All rendered videos follow standardized, timestamped naming conventions:

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="ios-notification" data-width="1080" data-height="1920" />
+  <title>iOS Push Notification Overlay</title>
+
+  <!-- Google Fonts: Inter / SF Pro display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Plus Jakarta Sans", "Inter", sans-serif;
+    }
+
+    #stage {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    /* Background image for preview rendering */
+    #bg-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1080px;
+      height: 1920px;
+      object-fit: cover;
+      z-index: 0;
+      display: none;
+    }
+
+    /* Notification wrapper */
+    .ios-notification-wrapper {
+      position: absolute;
+      top: var(--notification-top, 90px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 980px;
+      padding: 0 24px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Glassmorphic dark iOS card */
+    .ios-banner {
+      width: 100%;
+      background: rgba(32, 32, 36, 0.88);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 36px;
+      padding: 24px 30px;
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.55),
+        0 4px 15px rgba(0, 0, 0, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.25);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Header row: App icon, App name, Time */
+    .ios-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .app-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Green iMessage icon */
+    .app-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #34c759;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(52, 199, 89, 0.4);
+      flex-shrink: 0;
+    }
+
+    .app-icon svg {
+      width: 26px;
+      height: 26px;
+      fill: #ffffff;
+    }
+
+    .app-name {
+      color: #aeaeb2;
+      font-size: 23px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .time-stamp {
+      color: #8e8e93;
+      font-size: 22px;
+      font-weight: 500;
+    }
+
+    /* Body: Contact Name & Message Text */
+    .ios-content {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sender-name {
+      color: #ffffff;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+    }
+
+    .message-text {
+      color: #f2f2f7;
+      font-size: 30px;
+      font-weight: 400;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="ios-notification">
+    <img id="bg-image" src="" alt="Background Footage" />
+
+    <div class="ios-notification-wrapper" id="notification-wrapper">
+      <div class="ios-banner" id="ios-banner">
+        <div class="ios-header">
+          <div class="app-brand">
+            <div class="app-icon" id="app-icon">
+              <!-- iMessage Bubble SVG -->
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3C6.477 3 2 6.92 2 11.75c0 2.52 1.22 4.79 3.19 6.36-.18 1.4-.73 2.76-1.64 3.89 1.95 0 3.75-.85 4.95-2.09.49.09.99.14 1.5.14 5.523 0 10-3.92 10-8.75S17.523 3 12 3z"/>
+              </svg>
+            </div>
+            <span class="app-name" id="app-name">Messages</span>
+          </div>
+          <span class="time-stamp" id="time-stamp">now</span>
+        </div>
+
+        <div class="ios-content">
+          <div class="sender-name" id="sender-name">Mom ❤️</div>
+          <div class="message-text" id="message-text">
+            wait how did your Walmart receipt literally say $0.00?? 😭 send me the card link rn
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const bannerEl = document.getElementById('ios-banner');
+      const senderEl = document.getElementById('sender-name');
+      const msgEl = document.getElementById('message-text');
+
+      // HyperFrames variable resolution
+      if (typeof window !== 'undefined' && window.__hyperframes && typeof window.__hyperframes.getVariables === 'function') {
+        const vars = window.__hyperframes.getVariables();
+        if (vars.sender) senderEl.textContent = vars.sender;
+        if (vars.message || vars.caption) msgEl.textContent = vars.message || vars.caption;
+      }
+
+      // GSAP Spring arrival from top of screen
+      if (typeof gsap !== 'undefined') {
+        const tl = gsap.timeline({ paused: true });
+        tl.fromTo(
+          bannerEl,
+          { y: -180, opacity: 0, scale: 0.95 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.4)' }
+        );
+
+        if (!window.__timelines) window.__timelines = {};
+        window.__timelines['ios-notification'] = tl;
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -36,7 +36,7 @@ export class VideoEditor {
       captionsFile: options.captionsFile || '',
       videos: options.videos || [],
       videosDir: options.videosDir || defaultVideosDir,
-      styles: options.styles && options.styles.length > 0 ? options.styles : ['stroke', 'card', 'snapchat', 'comment'],
+      styles: options.styles && options.styles.length > 0 ? options.styles : ['stroke', 'card', 'snapchat', 'comment', 'ios-barrage'],
       outputDir: options.outputDir || defaultOutput,
       organizeByDate: options.organizeByDate !== undefined ? options.organizeByDate : true,
       batchName: options.batchName || '',
@@ -47,6 +47,8 @@ export class VideoEditor {
       cardTemplatePath: options.cardTemplatePath || '',
       snapchatTemplatePath: options.snapchatTemplatePath || '',
       commentTemplatePath: options.commentTemplatePath || '',
+      iosBarrageTemplatePath: options.iosBarrageTemplatePath || '',
+      sfxPath: options.sfxPath || path.resolve(process.cwd(), 'assets/sfx/iphone_notification_clean.wav'),
       verbose: options.verbose || false,
     };
 
@@ -55,6 +57,7 @@ export class VideoEditor {
       cardTemplatePath: this.options.cardTemplatePath,
       snapchatTemplatePath: this.options.snapchatTemplatePath,
       commentTemplatePath: this.options.commentTemplatePath,
+      iosBarrageTemplatePath: this.options.iosBarrageTemplatePath,
     });
   }
 
@@ -235,9 +238,13 @@ export class VideoEditor {
     // Worker pool for concurrency control
     const executeTask = async (task: RenderTask): Promise<RenderedVideoItem> => {
       const t0 = Date.now();
-      await compositeOverlay(task.rawVideoPath, task.overlayPath, task.outputVideoPath);
+      const isIosBarrage = task.style === 'ios-barrage';
+      const sfxAudio = this.options.sfxPath && fs.existsSync(this.options.sfxPath) ? this.options.sfxPath : undefined;
 
-      // Create hardlink or copy to all_videos/ directory
+      await compositeOverlay(task.rawVideoPath, task.overlayPath, task.outputVideoPath, {
+        sfxAudioPath: isIosBarrage ? sfxAudio : undefined,
+        sfxDelaysMs: isIosBarrage ? [600, 1300, 2000, 2700, 3400] : undefined,
+      });
       if (fs.existsSync(task.flatVideoPath)) {
         fs.unlinkSync(task.flatVideoPath);
       }
