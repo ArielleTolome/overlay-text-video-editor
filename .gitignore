@@ -8,9 +8,28 @@ node_modules
 *.avi
 *.webm
 *.m4v
+
+# Image previews and frames (no images in git)
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.bmp
+*.tiff
+
+# Audio files (no audio samples in git)
+*.mp3
+*.wav
+*.aac
+*.m4a
+*.ogg
+*.flac
+
+# Local media and analysis directories
 assets/
 analysis/
-
+previews/
 # output and archives
 out
 dist
