@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="capcut-bounce" data-width="1080" data-height="1920" />
+  <title>CapCut Viral Yellow Bounce Auto-Captions</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800;900&family=Montserrat:wght@800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Montserrat", "Impact", Arial, sans-serif; }
+    #stage { position: relative; width: 1080px; height: 1920px; display: flex; justify-content: center; align-items: flex-start; }
+    .caption-wrapper { position: absolute; top: var(--caption-top, 40%); left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 960px; padding: 0 20px; display: flex; justify-content: center; align-items: center; pointer-events: none; z-index: 10; }
+    .capcut-text { color: #ffffff; font-size: var(--caption-font-size, 58px); font-weight: 900; line-height: 1.22; text-align: center; text-transform: uppercase; letter-spacing: -0.015em; word-wrap: break-word; -webkit-text-stroke: 5px #000000; paint-order: stroke fill; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.95), 0 8px 20px rgba(0, 0, 0, 0.7); }
+    .capcut-highlight { color: #ffe600; display: inline-block; transform: scale(1.08); -webkit-text-stroke: 5.5px #000000; text-shadow: 0 0 25px rgba(255, 230, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.95); margin: 0 4px; }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="capcut-bounce">
+    <div class="caption-wrapper" id="caption-wrapper">
+      <div class="capcut-text" id="caption-text"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const captionEl = document.getElementById("caption-text");
+      let caption = window.CAPTION || "{{CAPTION}}";
+      if (!caption || caption === "{{CAPTION}}") {
+        caption = "CLAIM YOUR $1400 SUBSIDY CARD TODAY";
+      }
+
+      function highlightKeywords(text) {
+        const words = text.split(/\s+/);
+        return words.map((w, idx) => {
+          const isHighlight = /\$?\d+|free|hack|secret|sauce|today|viral|literally|link|zero/i.test(w) || (words.length > 5 && idx >= 2 && idx <= 4);
+          if (isHighlight) {
+            return `<span class=\"capcut-highlight\">${w}</span>`;
+          }
+          return w;
+        }).join(" ");
+      }
+
+      captionEl.innerHTML = highlightKeywords(caption);
+    })();
+  </script>
+</body>
+</html>

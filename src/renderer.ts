@@ -13,6 +13,10 @@ export interface OverlayRenderOptions {
   commentTemplatePath?: string;
   iosBarrageTemplatePath?: string;
   twotoneTemplatePath?: string;
+  typewriterTemplatePath?: string;
+  neonTemplatePath?: string;
+  capcutBounceTemplatePath?: string;
+  capcutRedboxTemplatePath?: string;
 }
 
 export class OverlayRenderer {
@@ -23,6 +27,10 @@ export class OverlayRenderer {
   private commentTemplateHtml: string = '';
   private iosBarrageTemplateHtml: string = '';
   private twotoneTemplateHtml: string = '';
+  private typewriterTemplateHtml: string = '';
+  private neonTemplateHtml: string = '';
+  private capcutBounceTemplateHtml: string = '';
+  private capcutRedboxTemplateHtml: string = '';
   private overlayCache: Map<string, string> = new Map();
   constructor(private options: OverlayRenderOptions = {}) {}
 
@@ -49,8 +57,12 @@ export class OverlayRenderer {
     const defaultCardPath = path.resolve(process.cwd(), 'templates/tiktok_card.html');
     const defaultSnapchatPath = path.resolve(process.cwd(), 'templates/snapchat.html');
     const defaultCommentPath = path.resolve(process.cwd(), 'templates/tiktok_comment.html');
-    const defaultBarragePath = path.resolve(process.cwd(), 'templates/ios_notification_barrage.html');
+    const defaultBarragePath = path.resolve(process.cwd(), 'templates/ios_notification_cover_storm.html');
     const defaultTwotonePath = path.resolve(process.cwd(), 'templates/tiktok_twotone.html');
+    const defaultTypewriterPath = path.resolve(process.cwd(), 'templates/tiktok_typewriter.html');
+    const defaultNeonPath = path.resolve(process.cwd(), 'templates/tiktok_neon.html');
+    const defaultBouncePath = path.resolve(process.cwd(), 'templates/capcut_bounce.html');
+    const defaultRedboxPath = path.resolve(process.cwd(), 'templates/capcut_redbox.html');
 
     const strokePath = this.options.strokeTemplatePath || defaultStrokePath;
     const cardPath = this.options.cardTemplatePath || defaultCardPath;
@@ -58,30 +70,21 @@ export class OverlayRenderer {
     const commentPath = this.options.commentTemplatePath || defaultCommentPath;
     const barragePath = this.options.iosBarrageTemplatePath || defaultBarragePath;
     const twotonePath = this.options.twotoneTemplatePath || defaultTwotonePath;
+    const typewriterPath = this.options.typewriterTemplatePath || defaultTypewriterPath;
+    const neonPath = this.options.neonTemplatePath || defaultNeonPath;
+    const bouncePath = this.options.capcutBounceTemplatePath || defaultBouncePath;
+    const redboxPath = this.options.capcutRedboxTemplatePath || defaultRedboxPath;
 
-    this.strokeTemplateHtml = fs.existsSync(strokePath)
-      ? fs.readFileSync(strokePath, 'utf8')
-      : this.getFallbackStrokeTemplate();
-
-    this.cardTemplateHtml = fs.existsSync(cardPath)
-      ? fs.readFileSync(cardPath, 'utf8')
-      : this.getFallbackCardTemplate();
-
-    this.snapchatTemplateHtml = fs.existsSync(snapchatPath)
-      ? fs.readFileSync(snapchatPath, 'utf8')
-      : this.getFallbackSnapchatTemplate();
-
-    this.commentTemplateHtml = fs.existsSync(commentPath)
-      ? fs.readFileSync(commentPath, 'utf8')
-      : this.getFallbackCommentTemplate();
-
-    this.iosBarrageTemplateHtml = fs.existsSync(barragePath)
-      ? fs.readFileSync(barragePath, 'utf8')
-      : this.getFallbackCommentTemplate();
-
-    this.twotoneTemplateHtml = fs.existsSync(twotonePath)
-      ? fs.readFileSync(twotonePath, 'utf8')
-      : this.getFallbackTwotoneTemplate();
+    this.strokeTemplateHtml = fs.existsSync(strokePath) ? fs.readFileSync(strokePath, 'utf8') : this.getFallbackStrokeTemplate();
+    this.cardTemplateHtml = fs.existsSync(cardPath) ? fs.readFileSync(cardPath, 'utf8') : this.getFallbackCardTemplate();
+    this.snapchatTemplateHtml = fs.existsSync(snapchatPath) ? fs.readFileSync(snapchatPath, 'utf8') : this.getFallbackSnapchatTemplate();
+    this.commentTemplateHtml = fs.existsSync(commentPath) ? fs.readFileSync(commentPath, 'utf8') : this.getFallbackCommentTemplate();
+    this.iosBarrageTemplateHtml = fs.existsSync(barragePath) ? fs.readFileSync(barragePath, 'utf8') : this.getFallbackCommentTemplate();
+    this.twotoneTemplateHtml = fs.existsSync(twotonePath) ? fs.readFileSync(twotonePath, 'utf8') : this.getFallbackTwotoneTemplate();
+    this.typewriterTemplateHtml = fs.existsSync(typewriterPath) ? fs.readFileSync(typewriterPath, 'utf8') : this.getFallbackStrokeTemplate();
+    this.neonTemplateHtml = fs.existsSync(neonPath) ? fs.readFileSync(neonPath, 'utf8') : this.getFallbackStrokeTemplate();
+    this.capcutBounceTemplateHtml = fs.existsSync(bouncePath) ? fs.readFileSync(bouncePath, 'utf8') : this.getFallbackStrokeTemplate();
+    this.capcutRedboxTemplateHtml = fs.existsSync(redboxPath) ? fs.readFileSync(redboxPath, 'utf8') : this.getFallbackStrokeTemplate();
   }
   /**
    * Renders an overlay transparent PNG for a specific caption and style.
@@ -126,6 +129,18 @@ export class OverlayRenderer {
     } else if (style === 'twotone') {
       templateHtml = this.twotoneTemplateHtml;
       compId = 'tiktok-twotone';
+    } else if (style === 'typewriter') {
+      templateHtml = this.typewriterTemplateHtml;
+      compId = 'tiktok-typewriter';
+    } else if (style === 'neon') {
+      templateHtml = this.neonTemplateHtml;
+      compId = 'tiktok-neon';
+    } else if (style === 'capcut-bounce') {
+      templateHtml = this.capcutBounceTemplateHtml;
+      compId = 'capcut-bounce';
+    } else if (style === 'capcut-redbox') {
+      templateHtml = this.capcutRedboxTemplateHtml;
+      compId = 'capcut-redbox';
     }
     const safeCaption = JSON.stringify(caption);
     const escapedCaption = caption

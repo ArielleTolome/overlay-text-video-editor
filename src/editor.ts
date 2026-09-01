@@ -36,7 +36,9 @@ export class VideoEditor {
       captionsFile: options.captionsFile || '',
       videos: options.videos || [],
       videosDir: options.videosDir || defaultVideosDir,
-      styles: options.styles && options.styles.length > 0 ? options.styles : ['stroke', 'card', 'snapchat', 'comment', 'ios-barrage', 'twotone'],
+      styles: options.styles && options.styles.length > 0
+        ? options.styles
+        : ['stroke', 'card', 'twotone', 'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox', 'snapchat', 'comment', 'ios-barrage'],
       outputDir: options.outputDir || defaultOutput,
       organizeByDate: options.organizeByDate !== undefined ? options.organizeByDate : true,
       batchName: options.batchName || '',
@@ -49,6 +51,10 @@ export class VideoEditor {
       commentTemplatePath: options.commentTemplatePath || '',
       iosBarrageTemplatePath: options.iosBarrageTemplatePath || '',
       twotoneTemplatePath: options.twotoneTemplatePath || '',
+      typewriterTemplatePath: options.typewriterTemplatePath || '',
+      neonTemplatePath: options.neonTemplatePath || '',
+      capcutBounceTemplatePath: options.capcutBounceTemplatePath || '',
+      capcutRedboxTemplatePath: options.capcutRedboxTemplatePath || '',
       sfxPath: options.sfxPath || path.resolve(process.cwd(), 'assets/sfx/iphone_notification_clean.wav'),
       verbose: options.verbose || false,
     };
@@ -60,6 +66,10 @@ export class VideoEditor {
       commentTemplatePath: this.options.commentTemplatePath,
       iosBarrageTemplatePath: this.options.iosBarrageTemplatePath,
       twotoneTemplatePath: this.options.twotoneTemplatePath,
+      typewriterTemplatePath: this.options.typewriterTemplatePath,
+      neonTemplatePath: this.options.neonTemplatePath,
+      capcutBounceTemplatePath: this.options.capcutBounceTemplatePath,
+      capcutRedboxTemplatePath: this.options.capcutRedboxTemplatePath,
     });
   }
 

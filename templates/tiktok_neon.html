@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="tiktok-neon" data-width="1080" data-height="1920" />
+  <title>TikTok Native Neon Text Overlay</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Montserrat:wght@800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Montserrat", sans-serif; }
+    #stage { position: relative; width: 1080px; height: 1920px; display: flex; justify-content: center; align-items: flex-start; }
+    .caption-wrapper { position: absolute; top: var(--caption-top, 40%); left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 960px; padding: 0 20px; display: flex; justify-content: center; align-items: center; pointer-events: none; z-index: 10; }
+    .neon-text { color: #ffffff; font-size: var(--caption-font-size, 54px); font-weight: 900; line-height: 1.25; text-align: center; text-transform: uppercase; letter-spacing: 0.02em; word-wrap: break-word; text-shadow: 0 0 8px #ff0055, 0 0 18px #ff0055, 0 0 35px #ff0055, 0 0 60px #ff0055, 0 4px 14px rgba(0, 0, 0, 0.95); }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="tiktok-neon">
+    <div class="caption-wrapper" id="caption-wrapper">
+      <div class="neon-text" id="caption-text">NEON GLOW TITLE</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const captionEl = document.getElementById("caption-text");
+      let caption = window.CAPTION || "{{CAPTION}}";
+      if (!caption || caption === "{{CAPTION}}") {
+        caption = "NEON GLOW TITLE";
+      }
+      captionEl.textContent = caption;
+    })();
+  </script>
+</body>
+</html>

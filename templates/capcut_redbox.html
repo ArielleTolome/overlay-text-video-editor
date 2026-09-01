@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="capcut-redbox" data-width="1080" data-height="1920" />
+  <title>CapCut Red Box Highlight Overlay</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Montserrat:wght@800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Montserrat", Arial, sans-serif; }
+    #stage { position: relative; width: 1080px; height: 1920px; display: flex; justify-content: center; align-items: flex-start; }
+    .caption-wrapper { position: absolute; top: var(--caption-top, 40%); left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 960px; padding: 0 20px; display: flex; justify-content: center; align-items: center; pointer-events: none; z-index: 10; }
+    .redbox-text { color: #ffffff; font-size: var(--caption-font-size, 52px); font-weight: 800; line-height: 1.35; text-align: center; text-transform: uppercase; letter-spacing: -0.01em; word-wrap: break-word; text-shadow: 0 3px 10px rgba(0, 0, 0, 0.95); }
+    .red-box { display: inline-block; background: #e50914; color: #ffffff; font-weight: 900; padding: 6px 20px; border-radius: 14px; box-shadow: 0 6px 20px rgba(229, 9, 20, 0.45), 0 3px 8px rgba(0, 0, 0, 0.5); margin: 0 6px; letter-spacing: 0.01em; transform: scale(1.05); }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="capcut-redbox">
+    <div class="caption-wrapper" id="caption-wrapper">
+      <div class="redbox-text" id="caption-text"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const captionEl = document.getElementById("caption-text");
+      let caption = window.CAPTION || "{{CAPTION}}";
+      if (!caption || caption === "{{CAPTION}}") {
+        caption = "HOW TO GET YOUR $1400 SUBSIDY CARD AT WALMART";
+      }
+
+      function highlightRed(text) {
+        const words = text.split(/\s+/);
+        return words.map((w, idx) => {
+          const isRed = /\$?\d+|subsidy|free|secret|warning|urgent|alert/i.test(w);
+          if (isRed) {
+            return `<span class=\"red-box\">${w}</span>`;
+          }
+          return w;
+        }).join(" ");
+      }
+
+      captionEl.innerHTML = highlightRed(caption);
+    })();
+  </script>
+</body>
+</html>

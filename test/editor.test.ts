@@ -81,7 +81,7 @@ describe('TikTok Video Editor Engine', () => {
   });
 
   describe('Overlay Rendering Engine', () => {
-    it('should render transparent 1080x1920 overlay PNGs for all 6 styles (stroke, card, snapchat, comment, ios-barrage, twotone)', async () => {
+    it('should render transparent 1080x1920 overlay PNGs for all 10 styles', async () => {
       const renderer = new OverlayRenderer();
       await renderer.init();
 
@@ -92,6 +92,10 @@ describe('TikTok Video Editor Engine', () => {
       const commentPng = path.join(testDir, 'unit_comment.png');
       const barragePng = path.join(testDir, 'unit_barrage.png');
       const twotonePng = path.join(testDir, 'unit_twotone.png');
+      const typewriterPng = path.join(testDir, 'unit_typewriter.png');
+      const neonPng = path.join(testDir, 'unit_neon.png');
+      const bouncePng = path.join(testDir, 'unit_bounce.png');
+      const redboxPng = path.join(testDir, 'unit_redbox.png');
 
       await renderer.renderOverlay(DEFAULT_CAPTIONS[0], 'stroke', strokePng);
       await renderer.renderOverlay(DEFAULT_CAPTIONS[1], 'card', cardPng);
@@ -99,6 +103,10 @@ describe('TikTok Video Editor Engine', () => {
       await renderer.renderOverlay(DEFAULT_CAPTIONS[3], 'comment', commentPng);
       await renderer.renderOverlay(DEFAULT_CAPTIONS[4], 'ios-barrage', barragePng);
       await renderer.renderOverlay(DEFAULT_CAPTIONS[5], 'twotone', twotonePng);
+      await renderer.renderOverlay(DEFAULT_CAPTIONS[0], 'typewriter', typewriterPng);
+      await renderer.renderOverlay(DEFAULT_CAPTIONS[1], 'neon', neonPng);
+      await renderer.renderOverlay(DEFAULT_CAPTIONS[2], 'capcut-bounce', bouncePng);
+      await renderer.renderOverlay(DEFAULT_CAPTIONS[3], 'capcut-redbox', redboxPng);
 
       expect(fs.existsSync(strokePng)).toBe(true);
       expect(fs.existsSync(cardPng)).toBe(true);
@@ -106,6 +114,10 @@ describe('TikTok Video Editor Engine', () => {
       expect(fs.existsSync(commentPng)).toBe(true);
       expect(fs.existsSync(barragePng)).toBe(true);
       expect(fs.existsSync(twotonePng)).toBe(true);
+      expect(fs.existsSync(typewriterPng)).toBe(true);
+      expect(fs.existsSync(neonPng)).toBe(true);
+      expect(fs.existsSync(bouncePng)).toBe(true);
+      expect(fs.existsSync(redboxPng)).toBe(true);
 
       expect(fs.statSync(strokePng).size).toBeGreaterThan(1000);
       expect(fs.statSync(cardPng).size).toBeGreaterThan(1000);
@@ -113,6 +125,10 @@ describe('TikTok Video Editor Engine', () => {
       expect(fs.statSync(commentPng).size).toBeGreaterThan(1000);
       expect(fs.statSync(barragePng).size).toBeGreaterThan(1000);
       expect(fs.statSync(twotonePng).size).toBeGreaterThan(1000);
+      expect(fs.statSync(typewriterPng).size).toBeGreaterThan(1000);
+      expect(fs.statSync(neonPng).size).toBeGreaterThan(1000);
+      expect(fs.statSync(bouncePng).size).toBeGreaterThan(1000);
+      expect(fs.statSync(redboxPng).size).toBeGreaterThan(1000);
 
       await renderer.close();
     }, 30000);
@@ -131,7 +147,7 @@ describe('TikTok Video Editor Engine', () => {
       const editor = new VideoEditor({
         captions: sampleCaptions,
         videos: sampleVideos,
-        styles: ['stroke', 'card', 'snapchat', 'comment', 'ios-barrage', 'twotone'],
+        styles: ['stroke', 'card', 'twotone', 'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox', 'snapchat', 'comment', 'ios-barrage'],
         outputDir: testOutputDir,
         organizeByDate: false, // test direct output mode
         zip: true,
@@ -142,7 +158,7 @@ describe('TikTok Video Editor Engine', () => {
       const manifest = await editor.renderBatch();
 
       expect(manifest.totalCaptions).toBe(1);
-      expect(manifest.totalVideos).toBe(6);
+      expect(manifest.totalVideos).toBe(10);
       expect(manifest.zipFile).toBeDefined();
       expect(manifest.timestamp).toBeDefined();
 
@@ -177,7 +193,7 @@ describe('TikTok Video Editor Engine', () => {
       // Verify metadata.json contents
       const metadata = JSON.parse(fs.readFileSync(path.join(captionFolder, 'metadata.json'), 'utf8'));
       expect(metadata.captionText).toBe(sampleCaptions[0]);
-      expect(metadata.videos.length).toBe(6);
+      expect(metadata.videos.length).toBe(10);
       expect(metadata.batchId).toBeDefined();
       expect(metadata.namingConvention).toBeDefined();
     }, 60000);
