@@ -88,8 +88,7 @@ bun run start
 bun run start --styles ios-barrage
 
 # Custom captions inline:
-bun run start --captions "Stop scrolling 💀, Claim your $500 allowance 🛒, Free grocery hack 😭"
-
+bun run start --captions "Stop scrolling 💀, Claim your $1400 subsidy card 🛒, Free Walmart hack 😭"
 # Specific styles (e.g. snapchat and comment):
 bun run start --styles "snapchat,comment"
 
@@ -135,8 +134,7 @@ All rendered videos follow standardized, timestamped naming conventions:
 
 - **In Flat Directory (`all_videos/`)**:
   - `[YYYYMMDD]_[HHMMSS]_[RAW_VIDEO]_[STYLE]_[CAPTION_TAG]_[SLUG].mp4`
-  - *Example*: `20260831_145002_video_1_stroke_c01_lowkey_thought_this_500.mp4`
-
+  - *Example*: `20260831_145002_video_1_stroke_c01_lowkey_thought_this_1400.mp4`
 ---
 
 ## 📂 Output Folder Structure
@@ -146,20 +144,18 @@ output/
 ├── 2026-08-31/
 │   └── batch_14-50-02/
 │       ├── captions/
-│       │   ├── caption_01_lowkey_thought_this_500_grocery_card_was_fake/
+│       │   ├── caption_01_lowkey_thought_this_1400_subsidy_card_was_fake/
 │       │   │   ├── caption.txt
 │       │   │   ├── metadata.json
 │       │   │   ├── 20260831_145002_video_1_stroke_c01.mp4
 │       │   │   └── ...
 │       │   └── ...
 │       ├── all_videos/
-│       │   ├── 20260831_145002_video_1_stroke_c01_lowkey_thought_this_500.mp4
+│       │   ├── 20260831_145002_video_1_stroke_c01_lowkey_thought_this_1400.mp4
 │       │   └── ...
 │       ├── manifest.json
 │       ├── README.md
 │       └── tiktok_caption_videos_20260831_145002.zip
-├── latest -> ./2026-08-31/batch_14-50-02
-└── tiktok_caption_videos.zip
 ```
 
 ---
@@ -171,8 +167,8 @@ import { batchRender } from './src/editor';
 
 const manifest = await batchRender({
   captions: [
-    "lowkey thought this $500 grocery card was fake until my Walmart receipt literally said $0.00 😭💀",
-    "if u buy groceries and haven't claimed ur $500 allowance card yet u are literally throwing away money 😭"
+    "lowkey thought this $1400 subsidy card was fake until my Walmart receipt literally said $0.00 😭💀",
+    "if u buy groceries and haven't claimed ur $910 grocery card for seniors yet u are literally throwing away money 😭"
   ],
   videosDir: './assets/raw_cuts',
   styles: ['stroke', 'card'],

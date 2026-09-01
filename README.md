@@ -46,11 +46,10 @@ All output videos strictly follow standardized naming rules:
 [YYYYMMDD]_[HHMMSS]_[RAW_VIDEO]_[STYLE]_[CAPTION_TAG]_[SLUG].mp4
 ```
 *Examples:*
-- `20260831_145002_video_1_stroke_c01_lowkey_thought_this_500.mp4`
-- `20260831_145002_video_1_card_c01_lowkey_thought_this_500.mp4`
+- `20260831_145002_video_1_stroke_c01_lowkey_thought_this_1400.mp4`
+- `20260831_145002_video_1_card_c01_lowkey_thought_this_1400.mp4`
 - `20260831_145002_video_2_stroke_c02_if_u_buy_groceries.mp4`
-- `20260831_145002_video_3_card_c03_literally_just_got_500.mp4`
-
+- `20260831_145002_video_3_card_c03_literally_just_got_1400.mp4`
 ---
 
 ## 📁 Directory Structure
@@ -60,7 +59,7 @@ output/
 ├── 2026-08-31/
 │   └── batch_14-50-02/
 │       ├── captions/
-│       │   ├── caption_01_lowkey_thought_this_500_grocery_card_was_fake/
+│       │   ├── caption_01_lowkey_thought_this_1400_subsidy_card_was_fake/
 │       │   │   ├── caption.txt
 │       │   │   ├── metadata.json
 │       │   │   ├── 20260831_145002_video_1_stroke_c01.mp4
@@ -71,7 +70,7 @@ output/
 │       │   │   └── 20260831_145002_video_3_card_c01.mp4
 │       │   └── ...
 │       ├── all_videos/
-│       │   ├── 20260831_145002_video_1_stroke_c01_lowkey_thought_this_500.mp4
+│       │   ├── 20260831_145002_video_1_stroke_c01_lowkey_thought_this_1400.mp4
 │       │   └── ... (all rendered MP4s)
 │       ├── manifest.json
 │       ├── README.md
@@ -106,7 +105,7 @@ Generate an iOS Notification Storm video using overlay-text-video-editor.
 ```text
 Generate social proof video variants using the 'comment' and 'snapchat' overlay styles from overlay-text-video-editor.
 1. Source videos: ./assets/raw_cuts/
-2. Captions: "is the $500 grocery allowance card actually legit or a scam?? 😭", "how did your receipt literally say $0.00 at checkout??"
+2. Captions: "is the $910 grocery card for seniors actually legit or a scam?? 😭", "how did your receipt literally say $0.00 at checkout??"
 3. Package into timestamped folders with standardized naming conventions and build a zip archive.
 ```
 
@@ -127,7 +126,7 @@ bun run start --styles ios-barrage
 bun run start --styles "stroke,card"
 
 # 4. Render with custom inline captions:
-bun run start --captions "Stop scrolling 💀, Claim your $500 allowance 🛒"
+bun run start --captions "Stop scrolling 💀, Claim your $1400 subsidy card 🛒"
 
 # 5. Render from a text file containing captions (one per line):
 bun run start -f captions.txt
@@ -152,8 +151,8 @@ import { VideoEditor, batchRender } from './src/editor';
 
 const manifest = await batchRender({
   captions: [
-    "lowkey thought this $500 grocery card was fake until my Walmart receipt literally said $0.00 😭💀",
-    "if u buy groceries and haven't claimed ur $500 allowance card yet u are literally throwing away money 😭",
+    "lowkey thought this $1400 subsidy card was fake until my Walmart receipt literally said $0.00 😭💀",
+    "if u buy groceries and haven't claimed ur $910 grocery card for seniors yet u are literally throwing away money 😭",
   ],
   videosDir: './assets/raw_cuts',
   styles: ['stroke', 'card'],
@@ -187,9 +186,7 @@ git clone https://github.com/ArielleTolome/overlay-text-video-editor.git ~/.grok
 git clone https://github.com/ArielleTolome/overlay-text-video-editor.git ~/.claude/skills/tiktok-caption-video-editor
 ```
 
-#### 3. Natural Language Prompts Supported by the Skill:
-- *"Cut 10 seconds from these raw videos and add TikTok stroke captions for my $500 grocery card hook."*
-- *"Generate TikTok card overlays for these 5 captions and package them in a zip file organized by date and time."*
+- *"Cut 10 seconds from these raw videos and add TikTok stroke captions for my $1400 subsidy card hook."*
 - *"Batch render all captions in both styles with standardized naming conventions."*
 
 ---

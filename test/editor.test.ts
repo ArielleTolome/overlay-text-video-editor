@@ -17,17 +17,17 @@ import {
 describe('TikTok Video Editor Engine', () => {
   describe('Utils, Timestamps & Naming Conventions', () => {
     it('should create safe slugs stripping emojis and special characters', () => {
-      const text = "lowkey thought this $500 grocery card was fake until my Walmart receipt literally said $0.00 😭💀";
+      const text = "lowkey thought this $1400 subsidy card was fake until my Walmart receipt literally said $0.00 😭💀";
       const slug = slugify(text, 0);
-      expect(slug).toBe('caption_01_lowkey_thought_this_500_grocery_card_was_fake');
+      expect(slug).toBe('caption_01_lowkey_thought_this_1400_subsidy_card_was_fake_unt');
       expect(slug).not.toContain('😭');
       expect(slug).not.toContain('$');
     });
 
     it('should extract short caption slugs and build standard video names', () => {
-      const text = "lowkey thought this $500 grocery card was fake until my Walmart receipt literally said $0.00 😭💀";
+      const text = "lowkey thought this $1400 subsidy card was fake until my Walmart receipt literally said $0.00 😭💀";
       const shortSlug = getShortCaptionSlug(text);
-      expect(shortSlug).toBe('lowkey_thought_this_500');
+      expect(shortSlug).toBe('lowkey_thought_this_1400');
 
       const names = buildStandardVideoNames({
         stamp: '20260831_145022',
@@ -38,7 +38,7 @@ describe('TikTok Video Editor Engine', () => {
       });
 
       expect(names.captionFolderFileName).toBe('20260831_145022_video_1_stroke_c01.mp4');
-      expect(names.allVideosFileName).toBe('20260831_145022_video_1_stroke_c01_lowkey_thought_this_500.mp4');
+      expect(names.allVideosFileName).toBe('20260831_145022_video_1_stroke_c01_lowkey_thought_this_1400.mp4');
       expect(names.captionTag).toBe('c01');
     });
 

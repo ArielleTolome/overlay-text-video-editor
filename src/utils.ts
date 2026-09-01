@@ -55,7 +55,7 @@ export function slugify(text: string, index?: number): string {
     .toLowerCase()
     .replace(/[\s-]+/g, '_')
     .replace(/^_+|_+$/g, '')
-    .slice(0, 45);
+    .slice(0, 50);
 
   const prefix = typeof index === 'number' ? `caption_${String(index + 1).padStart(2, '0')}_` : '';
   return `${prefix}${clean || 'caption'}`;

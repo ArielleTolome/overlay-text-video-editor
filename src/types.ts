@@ -119,10 +119,10 @@ export interface BatchManifest {
 }
 
 export const DEFAULT_CAPTIONS: string[] = [
-  "lowkey thought this $500 grocery card was fake until my Walmart receipt literally said $0.00 😭💀",
-  "if u buy groceries and haven't claimed ur $500 allowance card yet u are literally throwing away money 😭",
-  "literally just got $500 worth of groceries for free because of this allowance card 😭🛒",
-  "stop paying full price for groceries when everyone is using this $500 grocery card 💀💸",
-  "pov: you finally claimed the $500 grocery allowance card before it ran out 😭✨",
-  "i was today years old when i found out anyone can get this $500 grocery card 💀🛒",
+  "lowkey thought this $1400 subsidy card was fake until my Walmart receipt literally said $0.00 😭💀",
+  "if u buy groceries and haven't claimed ur $910 grocery card for seniors yet u are literally throwing away money 😭",
+  "literally just got $1400 worth of groceries for free because of this subsidy card 😭🛒",
+  "stop paying full price for groceries when everyone is using this $910 grocery card 💀💸",
+  "pov: you finally claimed the $1400 subsidy card before it ran out 😭✨",
+  "i was today years old when i found out anyone can get this $910 grocery card 💀🛒",
 ];
