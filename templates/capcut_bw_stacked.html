@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="capcut-bw-stacked" data-width="1080" data-height="1920" />
+  <title>CapCut Alternating Black & White Stacked Overlay</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800;900&family=Montserrat:wght@800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Montserrat", sans-serif;
+    }
+
+    #stage {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .caption-wrapper {
+      position: absolute;
+      top: var(--caption-top, 40%);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      max-width: 960px;
+      padding: 0 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .bw-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      max-width: 100%;
+      text-align: center;
+    }
+
+    /* Alternating Black Box (White text) */
+    .block-black {
+      display: inline-block;
+      background: #000000;
+      color: #ffffff;
+      font-size: var(--caption-font-size, 52px);
+      font-weight: 900;
+      line-height: 1.25;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      padding: 12px 32px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      word-break: break-word;
+    }
+
+    /* Alternating White Box (Black text) */
+    .block-white {
+      display: inline-block;
+      background: #ffffff;
+      color: #000000;
+      font-size: var(--caption-font-size, 52px);
+      font-weight: 900;
+      line-height: 1.25;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      padding: 12px 32px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      text-align: center;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="capcut-bw-stacked">
+    <div class="caption-wrapper" id="caption-wrapper">
+      <div class="bw-stack" id="bw-stack"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const stackEl = document.getElementById("bw-stack");
+      const wrapperEl = document.getElementById("caption-wrapper");
+
+      let caption = window.CAPTION || "{{CAPTION}}";
+      if (!caption || caption === "{{CAPTION}}") {
+        caption = "SECRET GROCERY ALLOWANCE CARD\nCLAIM YOUR $1400 BENEFIT TODAY";
+      }
+
+      function formatLines(text) {
+        if (text.includes("\n")) return text.split("\n").map(l => l.trim()).filter(Boolean);
+        const words = text.split(/\s+/);
+        if (words.length <= 4) return [text];
+        const mid = Math.ceil(words.length / 2);
+        return [words.slice(0, mid).join(" "), words.slice(mid).join(" ")];
+      }
+
+      const lines = formatLines(caption);
+      stackEl.innerHTML = "";
+      lines.forEach((lineText, idx) => {
+        const span = document.createElement("span");
+        // Even lines black, odd lines white
+        span.className = (idx % 2 === 0) ? "block-black" : "block-white";
+        span.textContent = lineText;
+        stackEl.appendChild(span);
+      });
+    })();
+  </script>
+</body>
+</html>

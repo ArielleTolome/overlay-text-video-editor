@@ -17,7 +17,7 @@ Options:
   --captions-file, -f <p>  Path to text file (one per line) or JSON array of captions
   --videos <list>          Comma-separated list of raw video file paths
   --videos-dir, -d <path>  Directory containing raw video cuts (default: assets/raw_cuts)
-  --styles <styles>        Overlay styles: stroke, card, twotone, typewriter, neon, capcut-bounce, capcut-redbox, snapchat, comment, ios-barrage (default: all)
+  --styles <styles>        Overlay styles: stroke, card, black-contour, twotone, bw-stacked, minimal-vlog, typewriter, neon, capcut-bounce, capcut-redbox, snapchat, comment, ios-barrage (default: all)
   --sfx <path>             Custom audio chime SFX for iOS notifications (default: authentic iPhone sound)
   --output, -o <dir>       Output directory (default: output)
   --organize-by-date       Organize batches into YYYY-MM-DD/batch_HH-MM-SS folders (default: true)
@@ -88,8 +88,9 @@ export function parseArgs(args: string[]): EditorOptions & { showHelp?: boolean 
       const val = args[++i];
       if (val) {
         const validStyles: CaptionStyle[] = [
-          'stroke', 'card', 'twotone', 'typewriter', 'neon',
-          'capcut-bounce', 'capcut-redbox', 'snapchat', 'comment', 'ios-barrage'
+          'stroke', 'card', 'black-contour', 'twotone', 'bw-stacked', 'minimal-vlog',
+          'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox',
+          'snapchat', 'comment', 'ios-barrage'
         ];
         const parsed = val.split(',').map((s) => s.trim().toLowerCase().replace(/^barrage$/, 'ios-barrage')) as CaptionStyle[];
         options.styles = parsed.filter((s) => validStyles.includes(s));

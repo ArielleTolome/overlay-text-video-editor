@@ -97,21 +97,24 @@ bun run start -d ./my_raw_footage --batch-name promo_campaign -o ./campaign_dist
 ```
 ---
 
-## 🎨 Overlay Styles (10 Authentic Social & CapCut Styles)
+## 🎨 Overlay Styles (13 Authentic TikTok, CapCut & Social Styles)
 
 ### TikTok Native Text Styles:
 1. **Classic TikTok Stroke (`stroke`)**: High-impact bold white sans-serif with heavy black outline (`-webkit-text-stroke: 4.5px #000`), drop-shadow, and full emoji support (`😭💀`).
-2. **TikTok Stepped Contour Badge (`card`)**: Authentic stepped contour badge where each line of text gets its own tight white rounded pill container (`background: #ffffff; color: #000000; border-radius: 20px`).
-3. **TikTok Two-Tone Stacked Block (`twotone`)**: Dual-tone stacked badge: Top block in solid black with bold uppercase white text, Bottom block in solid white with purple accent text (`#9b27dc`).
-4. **TikTok Native Typewriter (`typewriter`)**: Monospaced typewriter font (`Courier Prime`) with tight black background blocks per line for investigative / true crime / storytelling aesthetics.
-5. **TikTok Native Neon Glow (`neon`)**: Glowing uppercase neon tube text with multi-layer pink/cyan bloom (`text-shadow: 0 0 18px #ff0055, 0 0 35px #ff0055`).
-6. **TikTok Comment Reply Sticker (`comment`)**: Realistic comment reply sticker with gradient user avatar (`sarah_j`), "Replying to your video" subtitle, dark body text, and speech bubble tail.
+2. **TikTok Stepped Contour Badge (`card`)**: Authentic white stepped contour badge where each line of text gets its own tight white rounded pill container (`background: #ffffff; color: #000000; border-radius: 20px`).
+3. **TikTok Inverted Black Contour (`black-contour`)**: Dark mode stepped contour badge: Solid black pills hugging each line with bold crisp white text (`background: #000000; color: #ffffff;`).
+4. **TikTok Two-Tone Stacked Block (`twotone`)**: Dual-tone stacked badge: Top block in solid black with uppercase white text, Bottom block in solid white with purple accent text (`#9b27dc`).
+5. **TikTok Native Typewriter (`typewriter`)**: Monospaced typewriter font (`Courier Prime`) with tight black background blocks per line.
+6. **TikTok Native Neon Glow (`neon`)**: Glowing uppercase neon tube text with multi-layer pink/cyan bloom (`text-shadow: 0 0 18px #ff0055`).
+7. **TikTok Comment Reply Sticker (`comment`)**: Realistic comment reply sticker with gradient user avatar (`sarah_j`), "Replying to your video" subtitle, dark body text, and speech bubble tail.
 
 ### CapCut & Social Formats:
-7. **CapCut Viral Yellow Bounce (`capcut-bounce`)**: CapCut's #1 viral auto-caption style with ultra-bold uppercase text, 5px black stroke, and **vibrant bouncing yellow (`#ffe600`) keyword highlights**.
-8. **CapCut Red Box Highlight (`capcut-redbox`)**: Dramatic high-contrast white text with critical focus words wrapped in a **vibrant red rectangular pill box (`background: #e50914;`)**.
-9. **Snapchat Translucent Bar (`snapchat`)**: Full-width horizontal translucent black banner (`background: rgba(0, 0, 0, 0.65)`, blur) with clean white text centered across the video.
-10. **iOS Notification Storm / Barrage (`ios-barrage`)**: Fast-paced cascading notification bombardment dropping from the top with synchronized authentic iPhone notification audio chimes.
+8. **CapCut Alternating B&W Stack (`bw-stacked`)**: Alternating black and white stacked rectangular blocks per line (Line 1 black/white, Line 2 white/black).
+9. **CapCut Minimalist Black Vlog Capsule (`minimal-vlog`)**: Clean frosted black capsule pill (`background: rgba(16, 16, 20, 0.92); border-radius: 999px;`) with uppercase tracking typography.
+10. **CapCut Viral Yellow Bounce (`capcut-bounce`)**: CapCut's #1 viral auto-caption style with ultra-bold uppercase text, 5px black stroke, and **vibrant bouncing yellow (`#ffe600`) keyword highlights**.
+11. **CapCut Red Box Highlight (`capcut-redbox`)**: Dramatic high-contrast white text with critical focus words wrapped in a **vibrant red rectangular pill box (`background: #e50914;`)**.
+12. **Snapchat Translucent Bar (`snapchat`)**: Full-width horizontal translucent black banner (`background: rgba(0, 0, 0, 0.65)`, blur) with clean white text centered across the video.
+13. **iOS Notification Storm / Barrage (`ios-barrage`)**: Fast-paced cascading notification bombardment dropping from the top with synchronized authentic iPhone notification audio chimes.
 All rendered videos follow standardized, timestamped naming conventions:
 
 - **In Caption Subfolders (`captions/<caption_slug>/`)**:

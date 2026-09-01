@@ -1,4 +1,4 @@
-export type CaptionStyle = 'stroke' | 'card' | 'twotone' | 'typewriter' | 'neon' | 'capcut-bounce' | 'capcut-redbox' | 'snapchat' | 'comment' | 'ios-barrage';
+export type CaptionStyle = 'stroke' | 'card' | 'black-contour' | 'twotone' | 'bw-stacked' | 'minimal-vlog' | 'typewriter' | 'neon' | 'capcut-bounce' | 'capcut-redbox' | 'snapchat' | 'comment' | 'ios-barrage';
 export interface EditorOptions {
   /** List of captions to process. Defaults to DEFAULT_CAPTIONS */
   captions?: string[];
@@ -8,7 +8,7 @@ export interface EditorOptions {
   videos?: string[];
   /** Directory containing raw video cuts. Defaults to 'assets/raw_cuts' */
   videosDir?: string;
-  /** Styles to generate ('stroke', 'card', 'twotone', 'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox', 'snapchat', 'comment', 'ios-barrage'). Defaults to all */
+  /** Styles to generate ('stroke', 'card', 'black-contour', 'twotone', 'bw-stacked', 'minimal-vlog', 'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox', 'snapchat', 'comment', 'ios-barrage'). Defaults to all */
   styles?: CaptionStyle[];
   /** Output directory. Defaults to 'output' */
   outputDir?: string;
@@ -34,6 +34,12 @@ export interface EditorOptions {
   iosBarrageTemplatePath?: string;
   /** Path to custom two-tone template HTML */
   twotoneTemplatePath?: string;
+  /** Path to custom black contour template HTML */
+  blackContourTemplatePath?: string;
+  /** Path to custom B&W stacked template HTML */
+  bwStackedTemplatePath?: string;
+  /** Path to custom minimal vlog template HTML */
+  minimalVlogTemplatePath?: string;
   /** Path to custom typewriter template HTML */
   typewriterTemplatePath?: string;
   /** Path to custom neon template HTML */

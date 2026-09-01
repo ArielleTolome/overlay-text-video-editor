@@ -38,7 +38,7 @@ export class VideoEditor {
       videosDir: options.videosDir || defaultVideosDir,
       styles: options.styles && options.styles.length > 0
         ? options.styles
-        : ['stroke', 'card', 'twotone', 'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox', 'snapchat', 'comment', 'ios-barrage'],
+        : ['stroke', 'card', 'black-contour', 'twotone', 'bw-stacked', 'minimal-vlog', 'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox', 'snapchat', 'comment', 'ios-barrage'],
       outputDir: options.outputDir || defaultOutput,
       organizeByDate: options.organizeByDate !== undefined ? options.organizeByDate : true,
       batchName: options.batchName || '',
@@ -51,6 +51,9 @@ export class VideoEditor {
       commentTemplatePath: options.commentTemplatePath || '',
       iosBarrageTemplatePath: options.iosBarrageTemplatePath || '',
       twotoneTemplatePath: options.twotoneTemplatePath || '',
+      blackContourTemplatePath: options.blackContourTemplatePath || '',
+      bwStackedTemplatePath: options.bwStackedTemplatePath || '',
+      minimalVlogTemplatePath: options.minimalVlogTemplatePath || '',
       typewriterTemplatePath: options.typewriterTemplatePath || '',
       neonTemplatePath: options.neonTemplatePath || '',
       capcutBounceTemplatePath: options.capcutBounceTemplatePath || '',
@@ -66,6 +69,9 @@ export class VideoEditor {
       commentTemplatePath: this.options.commentTemplatePath,
       iosBarrageTemplatePath: this.options.iosBarrageTemplatePath,
       twotoneTemplatePath: this.options.twotoneTemplatePath,
+      blackContourTemplatePath: this.options.blackContourTemplatePath,
+      bwStackedTemplatePath: this.options.bwStackedTemplatePath,
+      minimalVlogTemplatePath: this.options.minimalVlogTemplatePath,
       typewriterTemplatePath: this.options.typewriterTemplatePath,
       neonTemplatePath: this.options.neonTemplatePath,
       capcutBounceTemplatePath: this.options.capcutBounceTemplatePath,

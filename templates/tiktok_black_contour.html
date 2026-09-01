@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="tiktok-black-contour" data-width="1080" data-height="1920" />
+  <title>TikTok Black Stepped Contour Badge</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Montserrat:wght@800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    #stage {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .caption-wrapper {
+      position: absolute;
+      top: var(--caption-top, 40%);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      max-width: 960px;
+      padding: 0 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Stepped line-hugging black contour container */
+    .contour-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      max-width: 100%;
+      text-align: center;
+    }
+
+    /* Solid Black rounded pill per line with bold white text */
+    .pill-line {
+      display: inline-block;
+      background: #000000;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "TikTok Sans", "Plus Jakarta Sans", "Montserrat", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+      font-size: var(--caption-font-size, 52px);
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      padding: 12px 30px;
+      border-radius: 20px;
+      box-shadow: 
+        0 12px 36px rgba(0, 0, 0, 0.65),
+        0 2px 8px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="tiktok-black-contour">
+    <div class="caption-wrapper" id="caption-wrapper">
+      <div class="contour-container" id="contour-container"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const containerEl = document.getElementById("contour-container");
+      const wrapperEl = document.getElementById("caption-wrapper");
+
+      let caption = window.CAPTION || "{{CAPTION}}";
+      if (!caption || caption === "{{CAPTION}}") {
+        caption = "HOW TO DISPLAY\nWRITE UP ON YOUR\nSCREEN WHEN YOU GO\nLIVE";
+      }
+
+      if (typeof window !== "undefined" && window.location) {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("text") || params.get("caption")) {
+          caption = params.get("text") || params.get("caption");
+        }
+        if (params.get("top")) {
+          const t = params.get("top");
+          wrapperEl.style.setProperty("--caption-top", t.includes("%") || t.includes("px") ? t : t + "%");
+        }
+        if (params.get("size") || params.get("fontSize")) {
+          const sz = params.get("size") || params.get("fontSize");
+          wrapperEl.style.setProperty("--caption-font-size", sz.includes("px") ? sz : sz + "px");
+        }
+      }
+
+      function formatContourLines(text) {
+        if (text.includes("\n")) {
+          return text.split("\n").map(l => l.trim()).filter(Boolean);
+        }
+
+        const words = text.split(/\s+/);
+        if (words.length <= 4) {
+          return [text];
+        }
+
+        const targetWordsPerLine = words.length >= 10 ? 4 : (words.length >= 6 ? 3 : 2);
+        const lines = [];
+        let currentLine = [];
+
+        for (const word of words) {
+          currentLine.push(word);
+          const currentLength = currentLine.join(" ").length;
+          if (currentLine.length >= targetWordsPerLine || currentLength > 24) {
+            lines.push(currentLine.join(" "));
+            currentLine = [];
+          }
+        }
+        if (currentLine.length > 0) {
+          lines.push(currentLine.join(" "));
+        }
+        return lines;
+      }
+
+      const lines = formatContourLines(caption);
+      containerEl.innerHTML = "";
+      lines.forEach((lineText) => {
+        const span = document.createElement("span");
+        span.className = "pill-line";
+        span.textContent = lineText;
+        containerEl.appendChild(span);
+      });
+
+      if (caption.length > 90 || lines.length >= 4) {
+        wrapperEl.style.setProperty("--caption-font-size", "44px");
+      }
+    })();
+  </script>
+</body>
+</html>

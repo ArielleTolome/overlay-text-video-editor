@@ -13,6 +13,9 @@ export interface OverlayRenderOptions {
   commentTemplatePath?: string;
   iosBarrageTemplatePath?: string;
   twotoneTemplatePath?: string;
+  blackContourTemplatePath?: string;
+  bwStackedTemplatePath?: string;
+  minimalVlogTemplatePath?: string;
   typewriterTemplatePath?: string;
   neonTemplatePath?: string;
   capcutBounceTemplatePath?: string;
@@ -27,6 +30,9 @@ export class OverlayRenderer {
   private commentTemplateHtml: string = '';
   private iosBarrageTemplateHtml: string = '';
   private twotoneTemplateHtml: string = '';
+  private blackContourTemplateHtml: string = '';
+  private bwStackedTemplateHtml: string = '';
+  private minimalVlogTemplateHtml: string = '';
   private typewriterTemplateHtml: string = '';
   private neonTemplateHtml: string = '';
   private capcutBounceTemplateHtml: string = '';
@@ -59,6 +65,9 @@ export class OverlayRenderer {
     const defaultCommentPath = path.resolve(process.cwd(), 'templates/tiktok_comment.html');
     const defaultBarragePath = path.resolve(process.cwd(), 'templates/ios_notification_cover_storm.html');
     const defaultTwotonePath = path.resolve(process.cwd(), 'templates/tiktok_twotone.html');
+    const defaultBlackContourPath = path.resolve(process.cwd(), 'templates/tiktok_black_contour.html');
+    const defaultBwStackedPath = path.resolve(process.cwd(), 'templates/capcut_bw_stacked.html');
+    const defaultMinimalVlogPath = path.resolve(process.cwd(), 'templates/capcut_minimal_vlog.html');
     const defaultTypewriterPath = path.resolve(process.cwd(), 'templates/tiktok_typewriter.html');
     const defaultNeonPath = path.resolve(process.cwd(), 'templates/tiktok_neon.html');
     const defaultBouncePath = path.resolve(process.cwd(), 'templates/capcut_bounce.html');
@@ -70,6 +79,9 @@ export class OverlayRenderer {
     const commentPath = this.options.commentTemplatePath || defaultCommentPath;
     const barragePath = this.options.iosBarrageTemplatePath || defaultBarragePath;
     const twotonePath = this.options.twotoneTemplatePath || defaultTwotonePath;
+    const blackContourPath = this.options.blackContourTemplatePath || defaultBlackContourPath;
+    const bwStackedPath = this.options.bwStackedTemplatePath || defaultBwStackedPath;
+    const minimalVlogPath = this.options.minimalVlogTemplatePath || defaultMinimalVlogPath;
     const typewriterPath = this.options.typewriterTemplatePath || defaultTypewriterPath;
     const neonPath = this.options.neonTemplatePath || defaultNeonPath;
     const bouncePath = this.options.capcutBounceTemplatePath || defaultBouncePath;
@@ -81,11 +93,15 @@ export class OverlayRenderer {
     this.commentTemplateHtml = fs.existsSync(commentPath) ? fs.readFileSync(commentPath, 'utf8') : this.getFallbackCommentTemplate();
     this.iosBarrageTemplateHtml = fs.existsSync(barragePath) ? fs.readFileSync(barragePath, 'utf8') : this.getFallbackCommentTemplate();
     this.twotoneTemplateHtml = fs.existsSync(twotonePath) ? fs.readFileSync(twotonePath, 'utf8') : this.getFallbackTwotoneTemplate();
+    this.blackContourTemplateHtml = fs.existsSync(blackContourPath) ? fs.readFileSync(blackContourPath, 'utf8') : this.getFallbackCardTemplate();
+    this.bwStackedTemplateHtml = fs.existsSync(bwStackedPath) ? fs.readFileSync(bwStackedPath, 'utf8') : this.getFallbackTwotoneTemplate();
+    this.minimalVlogTemplateHtml = fs.existsSync(minimalVlogPath) ? fs.readFileSync(minimalVlogPath, 'utf8') : this.getFallbackCardTemplate();
     this.typewriterTemplateHtml = fs.existsSync(typewriterPath) ? fs.readFileSync(typewriterPath, 'utf8') : this.getFallbackStrokeTemplate();
     this.neonTemplateHtml = fs.existsSync(neonPath) ? fs.readFileSync(neonPath, 'utf8') : this.getFallbackStrokeTemplate();
     this.capcutBounceTemplateHtml = fs.existsSync(bouncePath) ? fs.readFileSync(bouncePath, 'utf8') : this.getFallbackStrokeTemplate();
     this.capcutRedboxTemplateHtml = fs.existsSync(redboxPath) ? fs.readFileSync(redboxPath, 'utf8') : this.getFallbackStrokeTemplate();
   }
+
   /**
    * Renders an overlay transparent PNG for a specific caption and style.
    * If outputPath is provided, writes to file and returns filePath.
@@ -129,6 +145,15 @@ export class OverlayRenderer {
     } else if (style === 'twotone') {
       templateHtml = this.twotoneTemplateHtml;
       compId = 'tiktok-twotone';
+    } else if (style === 'black-contour') {
+      templateHtml = this.blackContourTemplateHtml;
+      compId = 'tiktok-black-contour';
+    } else if (style === 'bw-stacked') {
+      templateHtml = this.bwStackedTemplateHtml;
+      compId = 'capcut-bw-stacked';
+    } else if (style === 'minimal-vlog') {
+      templateHtml = this.minimalVlogTemplateHtml;
+      compId = 'capcut-minimal-vlog';
     } else if (style === 'typewriter') {
       templateHtml = this.typewriterTemplateHtml;
       compId = 'tiktok-typewriter';

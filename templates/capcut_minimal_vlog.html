@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="capcut-minimal-vlog" data-width="1080" data-height="1920" />
+  <title>CapCut Minimalist Vlog Capsule Overlay</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Montserrat", sans-serif; }
+    #stage { position: relative; width: 1080px; height: 1920px; display: flex; justify-content: center; align-items: flex-start; }
+    .caption-wrapper { position: absolute; top: var(--caption-top, 40%); left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 960px; padding: 0 20px; display: flex; justify-content: center; align-items: center; pointer-events: none; z-index: 10; }
+    
+    .vlog-capsule {
+      display: inline-block;
+      background: rgba(16, 16, 20, 0.92);
+      backdrop-filter: blur(35px) saturate(180%);
+      -webkit-backdrop-filter: blur(35px) saturate(180%);
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
+      border-radius: 999px;
+      padding: 16px 42px;
+      color: #ffffff;
+      font-size: var(--caption-font-size, 44px);
+      font-weight: 700;
+      line-height: 1.25;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      text-align: center;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.3);
+      word-break: break-word;
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="capcut-minimal-vlog">
+    <div class="caption-wrapper" id="caption-wrapper">
+      <div class="vlog-capsule" id="vlog-capsule">HOW TO GET YOUR $1400 SUBSIDY CARD</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const capsuleEl = document.getElementById("vlog-capsule");
+      let caption = window.CAPTION || "{{CAPTION}}";
+      if (!caption || caption === "{{CAPTION}}") {
+        caption = "HOW TO GET YOUR $1400 SUBSIDY CARD";
+      }
+      capsuleEl.textContent = caption;
+    })();
+  </script>
+</body>
+</html>
