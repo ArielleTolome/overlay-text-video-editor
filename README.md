@@ -82,42 +82,68 @@ output/
 
 ---
 
-## 🚀 Quickstart
+## 📋 Copy & Paste AI Agent Prompts (Claude, Grokbot, Codex, Cursor)
 
-### Prerequisites
-- [Bun](https://bun.sh) (v1.2+) or Node.js (v20+)
-- [FFmpeg](https://ffmpeg.org) installed and available in your `PATH`
+Don't want to run CLI commands by hand? Simply copy and paste any of these prompts directly into **Claude Code**, **Grokbot**, **Codex**, or **Cursor**:
 
-### Installation
-```bash
-git clone https://github.com/ArielleTolome/overlay-text-video-editor.git
-cd overlay-text-video-editor
-bun install
+### 🚀 Prompt 1: Full Batch UGC Ad Generator (All 5 Styles)
+```text
+Use the overlay-text-video-editor tool in this repository to generate a complete batch of video ad creatives. 
+1. Use my raw video cuts in ./assets/raw_cuts/ (or cut 10-12s segments from my raw footage).
+2. Render variations across all 5 styles (stroke, card, snapchat, comment, ios-barrage) for the default viral hooks.
+3. Organize into date/time folders (output/YYYY-MM-DD/batch_HH-MM-SS/) and build the final .zip archive.
 ```
 
-### CLI Usage
-
-```bash
-# Run default batch (all 6 viral hooks across 3 raw video cuts in both styles):
-bun run start
-
-# Pass custom captions inline:
-bun run start --captions "Stop scrolling 💀, Claim your $500 allowance 🛒"
-
-# Pass captions from a text file:
-bun run start -f captions.txt
-
-# Attach a campaign batch name:
-bun run start --batch-name summer_promo
-
-# Render specific style only:
-bun run start --styles stroke --concurrency 4
-
-# Custom video cuts directory and output destination:
-bun run start -d ./my_raw_cuts -o ./dist
+### 🔔 Prompt 2: Viral iOS Notification Storm Hook (with iPhone Audio Chimes)
+```text
+Generate an iOS Notification Storm video using overlay-text-video-editor.
+1. Take the grocery footage in ./assets/raw_cuts/video_1.mp4.
+2. Apply the 'ios-barrage' style featuring rapid cascading notifications dropping from the top slot (0.6s to 4.5s) with authentic iPhone notification chimes.
+3. Output the 1080x1920 30fps MP4 video to ./output/examples/ and verify audio sync and visuals.
 ```
+
+### 💬 Prompt 3: Social Proof (TikTok Comment Sticker & Snapchat Bar)
+```text
+Generate social proof video variants using the 'comment' and 'snapchat' overlay styles from overlay-text-video-editor.
+1. Source videos: ./assets/raw_cuts/
+2. Captions: "is the $500 grocery allowance card actually legit or a scam?? 😭", "how did your receipt literally say $0.00 at checkout??"
+3. Package into timestamped folders with standardized naming conventions and build a zip archive.
+```
+
+👉 **For the full prompt library, see [`PROMPTS.md`](./PROMPTS.md)**
 
 ---
+
+## ⚡ CLI Command Cheatsheet
+
+```bash
+# 1. Run full standard batch (all 6 viral hooks, all cuts, all 5 styles):
+bun run start
+
+# 2. Render only the iOS notification barrage storm with audio chimes:
+bun run start --styles ios-barrage
+
+# 3. Render classic TikTok stroke and rounded card styles:
+bun run start --styles "stroke,card"
+
+# 4. Render with custom inline captions:
+bun run start --captions "Stop scrolling 💀, Claim your $500 allowance 🛒"
+
+# 5. Render from a text file containing captions (one per line):
+bun run start -f captions.txt
+
+# 6. Attach a custom campaign batch name:
+bun run start --batch-name summer_promo --captions "Claim your card today 💸"
+
+# 7. Use custom video footage folder and custom output destination:
+bun run start -d ./my_raw_footage -o ./campaign_dist
+
+# 8. Set custom rendering concurrency (e.g. 4 parallel FFmpeg workers):
+bun run start --concurrency 4
+
+# 9. Render directly into output root without nested date subfolders:
+bun run start --no-date-folder
+```
 
 ## 💻 Programmatic API
 

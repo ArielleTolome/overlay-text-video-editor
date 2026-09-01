@@ -58,42 +58,44 @@ Copy this `SKILL.md` and repository into your agent's skill library:
 
 ---
 
-## 🚀 Quick Execution Recipes
+## 📋 Copy & Paste AI Agent Prompts (Claude, Grokbot, Codex, Cursor)
 
-### 1. Default Batch Run
-Renders all 6 default viral hook captions across all raw cuts in `assets/raw_cuts/` in both styles:
-```bash
-bun run start
+### 🚀 Prompt 1: Full Batch UGC Ad Generator (All 5 Styles)
+```text
+Use the overlay-text-video-editor tool in this repository to generate a complete batch of video ad creatives. 
+1. Use my raw video cuts in ./assets/raw_cuts/ (or cut 10-12s segments from my raw footage).
+2. Render variations across all 5 styles (stroke, card, snapchat, comment, ios-barrage) for the default viral hooks.
+3. Organize into date/time folders (output/YYYY-MM-DD/batch_HH-MM-SS/) and build the final .zip archive.
 ```
 
-### 2. Custom Captions (Inline or File)
+### 🔔 Prompt 2: Viral iOS Notification Storm Hook (with iPhone Audio Chimes)
+```text
+Generate an iOS Notification Storm video using overlay-text-video-editor.
+1. Take the grocery footage in ./assets/raw_cuts/video_1.mp4.
+2. Apply the 'ios-barrage' style featuring rapid cascading notifications dropping from the top slot (0.6s to 4.5s) with authentic iPhone notification chimes.
+3. Output the 1080x1920 30fps MP4 video to ./output/examples/ and verify audio sync and visuals.
+```
+
+---
+
+## 🚀 Quick CLI Execution Recipes
+
 ```bash
-# Inline comma-separated captions
+# Default batch run (all 5 styles across default cuts and captions):
+bun run start
+
+# iOS notification barrage with authentic audio chimes:
+bun run start --styles ios-barrage
+
+# Custom captions inline:
 bun run start --captions "Stop scrolling 💀, Claim your $500 allowance 🛒, Free grocery hack 😭"
 
-# From a text file (one caption per line)
-bun run start -f captions.txt
+# Specific styles (e.g. snapchat and comment):
+bun run start --styles "snapchat,comment"
+
+# Custom video cuts directory and campaign batch name:
+bun run start -d ./my_raw_footage --batch-name promo_campaign -o ./campaign_dist
 ```
-
-### 3. Custom Batch Name & Campaign Tag
-```bash
-bun run start --batch-name grocery_promo --captions "Claim your card today 💸"
-```
-
-### 4. Specific Style Only
-```bash
-# Classic TikTok stroke text only
-bun run start --styles stroke --concurrency 4
-
-# Rounded card pill style only
-bun run start --styles card
-```
-
-### 5. Custom Raw Videos and Output Location
-```bash
-bun run start -d ./my_raw_footage -o ./campaign_output
-```
-
 ---
 
 ## 🎨 Overlay Styles (5 Authentic Social Styles)
