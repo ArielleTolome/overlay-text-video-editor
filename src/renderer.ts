@@ -12,6 +12,7 @@ export interface OverlayRenderOptions {
   snapchatTemplatePath?: string;
   commentTemplatePath?: string;
   iosBarrageTemplatePath?: string;
+  twotoneTemplatePath?: string;
 }
 
 export class OverlayRenderer {
@@ -21,6 +22,7 @@ export class OverlayRenderer {
   private snapchatTemplateHtml: string = '';
   private commentTemplateHtml: string = '';
   private iosBarrageTemplateHtml: string = '';
+  private twotoneTemplateHtml: string = '';
   private overlayCache: Map<string, string> = new Map();
   constructor(private options: OverlayRenderOptions = {}) {}
 
@@ -48,12 +50,14 @@ export class OverlayRenderer {
     const defaultSnapchatPath = path.resolve(process.cwd(), 'templates/snapchat.html');
     const defaultCommentPath = path.resolve(process.cwd(), 'templates/tiktok_comment.html');
     const defaultBarragePath = path.resolve(process.cwd(), 'templates/ios_notification_barrage.html');
+    const defaultTwotonePath = path.resolve(process.cwd(), 'templates/tiktok_twotone.html');
 
     const strokePath = this.options.strokeTemplatePath || defaultStrokePath;
     const cardPath = this.options.cardTemplatePath || defaultCardPath;
     const snapchatPath = this.options.snapchatTemplatePath || defaultSnapchatPath;
     const commentPath = this.options.commentTemplatePath || defaultCommentPath;
     const barragePath = this.options.iosBarrageTemplatePath || defaultBarragePath;
+    const twotonePath = this.options.twotoneTemplatePath || defaultTwotonePath;
 
     this.strokeTemplateHtml = fs.existsSync(strokePath)
       ? fs.readFileSync(strokePath, 'utf8')
@@ -74,8 +78,11 @@ export class OverlayRenderer {
     this.iosBarrageTemplateHtml = fs.existsSync(barragePath)
       ? fs.readFileSync(barragePath, 'utf8')
       : this.getFallbackCommentTemplate();
-  }
 
+    this.twotoneTemplateHtml = fs.existsSync(twotonePath)
+      ? fs.readFileSync(twotonePath, 'utf8')
+      : this.getFallbackTwotoneTemplate();
+  }
   /**
    * Renders an overlay transparent PNG for a specific caption and style.
    * If outputPath is provided, writes to file and returns filePath.
@@ -116,6 +123,9 @@ export class OverlayRenderer {
     } else if (style === 'ios-barrage') {
       templateHtml = this.iosBarrageTemplateHtml;
       compId = 'ios-barrage';
+    } else if (style === 'twotone') {
+      templateHtml = this.twotoneTemplateHtml;
+      compId = 'tiktok-twotone';
     }
     const safeCaption = JSON.stringify(caption);
     const escapedCaption = caption
@@ -252,8 +262,6 @@ body { margin:0; width:1080px; height:1920px; background:transparent; display:fl
   }
 
   /**
-   * Fallback embedded snapchat template if HTML file is missing.
-   */
   private getFallbackSnapchatTemplate(): string {
     return `<!DOCTYPE html>
 <html>
@@ -276,6 +284,22 @@ body { margin:0; width:1080px; height:1920px; background:transparent; display:fl
 .comment-card { background:#fff; border-radius:24px; padding:24px 28px; box-shadow:0 8px 30px rgba(0,0,0,0.3); max-width:85%; color:#161823; font-family:-apple-system,sans-serif; font-size:40px; font-weight:600; }
 </style></head>
 <body><div class="comment-card" id="caption">{{CAPTION}}</div></body>
+</html>`;
+  }
+
+  /**
+   * Fallback embedded two-tone template if HTML file is missing.
+   */
+  private getFallbackTwotoneTemplate(): string {
+    return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><style>
+body { margin:0; width:1080px; height:1920px; background:transparent; display:flex; justify-content:center; align-items:center; }
+.stack { display:flex; flex-direction:column; align-items:center; gap:10px; }
+.top { background:#000; color:#fff; padding:14px 34px; border-radius:20px; font-size:52px; font-weight:900; text-transform:uppercase; font-family:-apple-system,sans-serif; }
+.bot { background:#fff; color:#9b27dc; padding:14px 34px; border-radius:20px; font-size:48px; font-weight:800; font-family:-apple-system,sans-serif; }
+</style></head>
+<body><div class="stack"><div class="top">{{CAPTION}}</div><div class="bot">Check this out</div></div></body>
 </html>`;
   }
 }

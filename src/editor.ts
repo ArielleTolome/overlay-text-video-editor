@@ -36,7 +36,7 @@ export class VideoEditor {
       captionsFile: options.captionsFile || '',
       videos: options.videos || [],
       videosDir: options.videosDir || defaultVideosDir,
-      styles: options.styles && options.styles.length > 0 ? options.styles : ['stroke', 'card', 'snapchat', 'comment', 'ios-barrage'],
+      styles: options.styles && options.styles.length > 0 ? options.styles : ['stroke', 'card', 'snapchat', 'comment', 'ios-barrage', 'twotone'],
       outputDir: options.outputDir || defaultOutput,
       organizeByDate: options.organizeByDate !== undefined ? options.organizeByDate : true,
       batchName: options.batchName || '',
@@ -48,6 +48,7 @@ export class VideoEditor {
       snapchatTemplatePath: options.snapchatTemplatePath || '',
       commentTemplatePath: options.commentTemplatePath || '',
       iosBarrageTemplatePath: options.iosBarrageTemplatePath || '',
+      twotoneTemplatePath: options.twotoneTemplatePath || '',
       sfxPath: options.sfxPath || path.resolve(process.cwd(), 'assets/sfx/iphone_notification_clean.wav'),
       verbose: options.verbose || false,
     };
@@ -58,6 +59,7 @@ export class VideoEditor {
       snapchatTemplatePath: this.options.snapchatTemplatePath,
       commentTemplatePath: this.options.commentTemplatePath,
       iosBarrageTemplatePath: this.options.iosBarrageTemplatePath,
+      twotoneTemplatePath: this.options.twotoneTemplatePath,
     });
   }
 

@@ -14,13 +14,13 @@ Batch-renders across $N$ captions $\times$ $M$ raw video cuts $\times$ $K$ overl
 
 ## ✨ Features
 
-- **5 Authentic Social Overlay Styles**:
+- **6 Authentic Social Overlay Styles**:
   1. **Classic TikTok Stroke Style (`stroke`)**: High-impact bold white sans-serif with heavy black outline (`-webkit-text-stroke: 4.5px #000`), drop-shadow, and full emoji support (`😭💀`).
-  2. **TikTok Rounded Card Style (`card`)**: Semi-translucent elevated white pill/card container (`rgba(255,255,255,0.96)`, `border-radius: 24px`, shadow) with dark typography.
-  3. **Snapchat Translucent Bar Style (`snapchat`)**: Full-width horizontal translucent black banner (`background: rgba(0, 0, 0, 0.65)`, blur) with crisp white text.
-  4. **TikTok Comment Reply Sticker (`comment`)**: Authentic TikTok comment reply sticker with gradient avatar, user handle (`sarah_j`), "Replying to your video" subtitle, and speech bubble tail.
-  5. **iOS Notification Storm / Barrage (`ios-barrage`)**: Rapid-fire cascading push notifications dropping from the top with synchronized authentic iPhone notification audio chimes at each arrival.
-- **Hardware-Accelerated Compositing**: Multi-threaded FFmpeg pipeline (`h264_videotoolbox` on Apple Silicon / `libx264` on Linux/x86) achieving up to 10x real-time rendering.
+  2. **TikTok Stepped Contour Badge (`card`)**: Authentic TikTok stepped contour badge where each line of text gets its own tight white rounded pill container (`background: #ffffff`, `color: #000000`, `border-radius: 20px`), creating the iconic stepped silhouette.
+  3. **TikTok Two-Tone Stacked Block (`twotone`)**: Dual-tone stacked badge: Top block in solid black with bold uppercase white text (`background: #000000; color: #ffffff;`), Bottom block in solid white with bold purple/accent text (`background: #ffffff; color: #9b27dc;`).
+  4. **Snapchat Translucent Bar Style (`snapchat`)**: Full-width horizontal translucent black banner (`background: rgba(0, 0, 0, 0.65)`, blur) with crisp white text.
+  5. **TikTok Comment Reply Sticker (`comment`)**: Authentic TikTok comment reply sticker with gradient avatar, user handle (`sarah_j`), "Replying to your video" subtitle, and speech bubble tail.
+  6. **iOS Notification Storm / Barrage (`ios-barrage`)**: Rapid-fire cascading push notifications dropping from the top with synchronized authentic iPhone notification audio chimes at each arrival.
 - **Date & Time Organization**: Organizes batches into structured folders (`output/YYYY-MM-DD/batch_HH-MM-SS/`) with automatic `output/latest` symlink and root zip deliverables.
 - **Standardized Video Naming Conventions**: Clean, searchable filenames for ad managers, media buyers, and automated publishing.
 - **Instant ZIP Packaging & Reports**: Generates per-caption `metadata.json`, `manifest.json`, markdown catalog reports, and zipped distribution bundles.

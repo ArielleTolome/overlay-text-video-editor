@@ -97,33 +97,36 @@ bun run start -d ./my_raw_footage --batch-name promo_campaign -o ./campaign_dist
 ```
 ---
 
-## 🎨 Overlay Styles (5 Authentic Social Styles)
+## 🎨 Overlay Styles (6 Authentic Social Styles)
 
 1. **Classic TikTok Stroke Style (`stroke`)**:
    - High-impact bold white sans-serif with heavy black outline (`-webkit-text-stroke: 4.5px #000`), drop-shadow, and full emoji support (`😭💀`).
    - Vertical position: upper-chest height (`top: 35-42%`), centered horizontally.
    - Ideal for: High-energy hooks, viral organic TikTok content, UGC reactions.
 
-2. **TikTok Rounded Card Style (`card`)**:
-   - Elevated rounded white container (`rgba(255,255,255,0.96)`, `border-radius: 24px`, soft elevation shadow) with dark typography (`#111111`, font-weight 700).
-   - Vertical position: upper-chest height (`top: 35-42%`), centered horizontally.
-   - Ideal for: Clean aesthetic ads, TikTok shop callouts, testimonial cards.
+2. **TikTok Stepped Contour Badge (`card`)**:
+   - Authentic TikTok stepped contour badge where each line of text gets its own tight white rounded pill container (`background: #ffffff`, `color: #000000`, `border-radius: 20px`), creating the iconic stepped silhouette.
+   - Vertical position: upper-chest height (`top: 38-42%`), centered horizontally.
+   - Ideal for: Native TikTok text look, tutorials, hook cards.
 
-3. **Snapchat Translucent Bar Style (`snapchat`)**:
+3. **TikTok Two-Tone Stacked Block (`twotone`)**:
+   - Dual-tone stacked badge: Top block in solid black with bold uppercase white text (`background: #000000; color: #ffffff;`), Bottom block in solid white with bold purple/accent text (`background: #ffffff; color: #9b27dc;`).
+   - Vertical position: upper-middle (`top: 38%`), centered horizontally.
+   - Ideal for: "PUT TEXT ON YOUR SCREEN / Here's how to do it right" viral headline stacks.
+
+4. **Snapchat Translucent Bar Style (`snapchat`)**:
    - Full-width horizontal translucent black banner (`background: rgba(0, 0, 0, 0.65)`, backdrop blur) with clean white sans-serif text.
    - Vertical position: middle (`top: 48%`), centered across the video.
    - Ideal for: Native Snapchat/Reels aesthetic, street interviews, casual vlogs, breaking news hooks.
 
-4. **TikTok Comment Reply Sticker (`comment`)**:
+5. **TikTok Comment Reply Sticker (`comment`)**:
    - Realistic TikTok comment reply card with colored gradient avatar, user handle (`sarah_j`), "Replying to your video" subtitle, dark body text (`#161823`, font-weight 600), and speech bubble tail.
    - Vertical position: upper-middle (`top: 38%`), centered horizontally.
    - Ideal for: Question-and-answer hooks, answering objections, social proof UGC, viral curiosity openers.
 
-5. **iOS Notification Storm / Barrage (`ios-barrage`)**:
-   - Fast-paced cascading notification bombardment where multiple incoming alerts (Messages, Bank alerts, Group chats) drop from the top of the screen in rapid succession (every 0.6–0.7s) pushing down the stack.
-   - **Authentic Audio Chime**: Automatically synchronizes and mixes real iPhone notification chimes at each rapid alert drop.
+6. **iOS Notification Storm / Barrage (`ios-barrage`)**:
+   - Fast-paced cascading notification bombardment where multiple incoming alerts drop from the top of the screen in rapid succession with synchronized authentic iPhone notification audio chimes.
    - Ideal for: "Leaked sauce", viral chaos, FOMO hooks, overwhelming social proof.
-## 🏷️ Standardized Naming Conventions
 
 All rendered videos follow standardized, timestamped naming conventions:
 

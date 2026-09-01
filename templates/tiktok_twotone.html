@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="tiktok-twotone" data-width="1080" data-height="1920" />
+  <title>TikTok Two-Tone Stacked Badge Overlay</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Montserrat:wght@800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    #stage {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .caption-wrapper {
+      position: absolute;
+      top: var(--caption-top, 40%);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      max-width: 960px;
+      padding: 0 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .twotone-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      max-width: 100%;
+      text-align: center;
+    }
+
+    /* Top Block: Solid Black background, White bold uppercase text */
+    .top-block {
+      display: inline-block;
+      background: #000000;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Montserrat", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      font-size: var(--caption-font-size-top, 54px);
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      padding: 14px 34px;
+      border-radius: 20px;
+      box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.45),
+        0 2px 8px rgba(0, 0, 0, 0.25);
+      text-align: center;
+      word-break: break-word;
+    }
+
+    /* Bottom Block: Solid White background, Bright Purple / Accent text */
+    .bottom-block {
+      display: inline-block;
+      background: #ffffff;
+      color: #9b27dc;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Montserrat", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      font-size: var(--caption-font-size-bottom, 50px);
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      padding: 14px 34px;
+      border-radius: 20px;
+      box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.35),
+        0 2px 8px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="tiktok-twotone">
+    <div class="caption-wrapper" id="caption-wrapper">
+      <div class="twotone-stack" id="twotone-stack">
+        <div class="top-block" id="top-block">PUT TEXT ON YOUR SCREEN!!!!!</div>
+        <div class="bottom-block" id="bottom-block">Here's how to do it right</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const topBlockEl = document.getElementById("top-block");
+      const bottomBlockEl = document.getElementById("bottom-block");
+
+      let caption = window.CAPTION || "{{CAPTION}}";
+
+      function splitTwoTone(text) {
+        if (!text || text === "{{CAPTION}}") {
+          return {
+            top: "PUT TEXT ON YOUR SCREEN!!!!!",
+            bottom: "Here's how to do it right"
+          };
+        }
+
+        if (text.includes("\n")) {
+          const parts = text.split("\n").map(p => p.trim()).filter(Boolean);
+          return {
+            top: parts[0] || "",
+            bottom: parts.slice(1).join(" ") || ""
+          };
+        }
+
+        if (text.includes("|")) {
+          const parts = text.split("|").map(p => p.trim()).filter(Boolean);
+          return {
+            top: parts[0] || "",
+            bottom: parts.slice(1).join(" ") || ""
+          };
+        }
+
+        const words = text.split(/\s+/);
+        if (words.length <= 4) {
+          return { top: text, bottom: "" };
+        }
+        const mid = Math.ceil(words.length / 2);
+        return {
+          top: words.slice(0, mid).join(" "),
+          bottom: words.slice(mid).join(" ")
+        };
+      }
+
+      const parsed = splitTwoTone(caption);
+      if (parsed.top) {
+        topBlockEl.textContent = parsed.top;
+        topBlockEl.style.display = "inline-block";
+      } else {
+        topBlockEl.style.display = "none";
+      }
+
+      if (parsed.bottom) {
+        bottomBlockEl.textContent = parsed.bottom;
+        bottomBlockEl.style.display = "inline-block";
+      } else {
+        bottomBlockEl.style.display = "none";
+      }
+    })();
+  </script>
+</body>
+</html>

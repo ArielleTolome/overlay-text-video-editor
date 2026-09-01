@@ -81,7 +81,7 @@ describe('TikTok Video Editor Engine', () => {
   });
 
   describe('Overlay Rendering Engine', () => {
-    it('should render transparent 1080x1920 overlay PNGs for all 5 styles (stroke, card, snapchat, comment, ios-barrage)', async () => {
+    it('should render transparent 1080x1920 overlay PNGs for all 6 styles (stroke, card, snapchat, comment, ios-barrage, twotone)', async () => {
       const renderer = new OverlayRenderer();
       await renderer.init();
 
@@ -91,24 +91,28 @@ describe('TikTok Video Editor Engine', () => {
       const snapchatPng = path.join(testDir, 'unit_snapchat.png');
       const commentPng = path.join(testDir, 'unit_comment.png');
       const barragePng = path.join(testDir, 'unit_barrage.png');
+      const twotonePng = path.join(testDir, 'unit_twotone.png');
 
       await renderer.renderOverlay(DEFAULT_CAPTIONS[0], 'stroke', strokePng);
       await renderer.renderOverlay(DEFAULT_CAPTIONS[1], 'card', cardPng);
       await renderer.renderOverlay(DEFAULT_CAPTIONS[2], 'snapchat', snapchatPng);
       await renderer.renderOverlay(DEFAULT_CAPTIONS[3], 'comment', commentPng);
       await renderer.renderOverlay(DEFAULT_CAPTIONS[4], 'ios-barrage', barragePng);
+      await renderer.renderOverlay(DEFAULT_CAPTIONS[5], 'twotone', twotonePng);
 
       expect(fs.existsSync(strokePng)).toBe(true);
       expect(fs.existsSync(cardPng)).toBe(true);
       expect(fs.existsSync(snapchatPng)).toBe(true);
       expect(fs.existsSync(commentPng)).toBe(true);
       expect(fs.existsSync(barragePng)).toBe(true);
+      expect(fs.existsSync(twotonePng)).toBe(true);
 
       expect(fs.statSync(strokePng).size).toBeGreaterThan(1000);
       expect(fs.statSync(cardPng).size).toBeGreaterThan(1000);
       expect(fs.statSync(snapchatPng).size).toBeGreaterThan(1000);
       expect(fs.statSync(commentPng).size).toBeGreaterThan(1000);
       expect(fs.statSync(barragePng).size).toBeGreaterThan(1000);
+      expect(fs.statSync(twotonePng).size).toBeGreaterThan(1000);
 
       await renderer.close();
     }, 30000);
@@ -127,7 +131,7 @@ describe('TikTok Video Editor Engine', () => {
       const editor = new VideoEditor({
         captions: sampleCaptions,
         videos: sampleVideos,
-        styles: ['stroke', 'card', 'snapchat', 'comment', 'ios-barrage'],
+        styles: ['stroke', 'card', 'snapchat', 'comment', 'ios-barrage', 'twotone'],
         outputDir: testOutputDir,
         organizeByDate: false, // test direct output mode
         zip: true,
@@ -138,7 +142,7 @@ describe('TikTok Video Editor Engine', () => {
       const manifest = await editor.renderBatch();
 
       expect(manifest.totalCaptions).toBe(1);
-      expect(manifest.totalVideos).toBe(5);
+      expect(manifest.totalVideos).toBe(6);
       expect(manifest.zipFile).toBeDefined();
       expect(manifest.timestamp).toBeDefined();
 
@@ -155,22 +159,25 @@ describe('TikTok Video Editor Engine', () => {
       const snapchatVideo = filesInCaptionDir.find((f) => f.includes('snapchat') && f.endsWith('.mp4'));
       const commentVideo = filesInCaptionDir.find((f) => f.includes('comment') && f.endsWith('.mp4'));
       const barrageVideo = filesInCaptionDir.find((f) => f.includes('ios-barrage') && f.endsWith('.mp4'));
+      const twotoneVideo = filesInCaptionDir.find((f) => f.includes('twotone') && f.endsWith('.mp4'));
 
       expect(strokeVideo).toBeDefined();
       expect(cardVideo).toBeDefined();
       expect(snapchatVideo).toBeDefined();
       expect(commentVideo).toBeDefined();
       expect(barrageVideo).toBeDefined();
+      expect(twotoneVideo).toBeDefined();
       expect(strokeVideo).toMatch(/^\d{8}_\d{6}_video_1_stroke_c01\.mp4$/);
       expect(cardVideo).toMatch(/^\d{8}_\d{6}_video_1_card_c01\.mp4$/);
       expect(snapchatVideo).toMatch(/^\d{8}_\d{6}_video_1_snapchat_c01\.mp4$/);
       expect(commentVideo).toMatch(/^\d{8}_\d{6}_video_1_comment_c01\.mp4$/);
       expect(barrageVideo).toMatch(/^\d{8}_\d{6}_video_1_ios-barrage_c01\.mp4$/);
+      expect(twotoneVideo).toMatch(/^\d{8}_\d{6}_video_1_twotone_c01\.mp4$/);
 
       // Verify metadata.json contents
       const metadata = JSON.parse(fs.readFileSync(path.join(captionFolder, 'metadata.json'), 'utf8'));
       expect(metadata.captionText).toBe(sampleCaptions[0]);
-      expect(metadata.videos.length).toBe(5);
+      expect(metadata.videos.length).toBe(6);
       expect(metadata.batchId).toBeDefined();
       expect(metadata.namingConvention).toBeDefined();
     }, 60000);
