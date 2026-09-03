@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="staggered-stack" data-width="1080" data-height="1920" />
+  <title>TikTok Staggered Multi-Card Stack</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans / Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet" />
+
+  <!-- GSAP for HyperFrames timeline support -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    #stage {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .placement-top { --stack-top: 24%; }
+    .placement-center { --stack-top: 46%; }
+    .placement-chest { --stack-top: 60%; }
+    .placement-bottom { --stack-top: 74%; }
+
+    .stack-wrapper {
+      position: absolute;
+      top: var(--stack-top, 54%);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      max-width: 860px;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      pointer-events: none;
+    }
+
+    /* Primary Hook Card */
+    .primary-card {
+      width: 100%;
+      background: #ffffff;
+      color: #000000;
+      border-radius: 24px;
+      padding: 30px 36px;
+      box-shadow: 
+        0 20px 48px rgba(0, 0, 0, 0.4),
+        0 6px 16px rgba(0, 0, 0, 0.2);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "TikTok Sans", "Montserrat", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      font-size: 46px;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.015em;
+      text-align: center;
+      word-wrap: break-word;
+      transform-origin: center center;
+    }
+
+    /* Secondary Delayed Follow-Up / Action Card */
+    .secondary-card {
+      background: #111827;
+      color: #ffffff;
+      border-radius: 9999px;
+      padding: 20px 38px;
+      box-shadow: 
+        0 16px 36px rgba(0, 0, 0, 0.45),
+        0 0 0 2px rgba(255, 255, 255, 0.35);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "TikTok Sans", "Montserrat", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transform-origin: center center;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="staggered-stack">
+    <div class="stack-wrapper" id="stackWrapper">
+      <div class="primary-card" id="primaryCard">
+        <span id="primaryText">{{CAPTION}}</span>
+      </div>
+      <div class="secondary-card" id="secondaryCard">
+        <span id="secondaryText">tap below to get it yourself 👇</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function parseCards(rawText, secText) {
+      const pEl = document.getElementById('primaryText');
+      const sEl = document.getElementById('secondaryText');
+      if (!pEl) return;
+
+      if (secText) {
+        pEl.textContent = rawText.trim();
+        if (sEl) sEl.textContent = secText.trim();
+        return;
+      }
+
+      // Check if caption contains multi-part delimiter
+      const parts = rawText.split(/\r?\n\r?\n|\/\/|\|\|/).map(s => s.trim()).filter(Boolean);
+      if (parts.length > 1) {
+        pEl.textContent = parts[0];
+        if (sEl) sEl.textContent = parts[1];
+      } else {
+        pEl.textContent = rawText.trim();
+        // If single line, keep high-converting default CTA
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const caption = window.CAPTION || "{{CAPTION}}";
+      const secCaption = window.SECONDARY_CAPTION || "";
+      parseCards(caption, secCaption);
+
+      if (window.PLACEMENT) {
+        const wrapper = document.getElementById('stackWrapper');
+        if (wrapper) {
+          wrapper.className = `stack-wrapper placement-${window.PLACEMENT}`;
+        }
+      }
+
+      if (typeof gsap !== 'undefined') {
+        const tl = gsap.timeline({ paused: true });
+        tl.from('#primaryCard', {
+          duration: 0.45,
+          scale: 0.85,
+          opacity: 0,
+          y: -20,
+          ease: 'back.out(1.8)',
+        });
+        tl.from('#secondaryCard', {
+          duration: 0.45,
+          scale: 0.8,
+          opacity: 0,
+          y: 20,
+          ease: 'back.out(1.8)',
+        }, '+=0.2');
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines['staggered-stack'] = tl;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="crimson-alert" data-width="1080" data-height="1920" />
+  <title>Crimson Alert Translucent Badge</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans / Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet" />
+
+  <!-- GSAP for HyperFrames timeline support -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    #stage {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .placement-top { --alert-top: 24%; }
+    .placement-center { --alert-top: 48%; }
+    .placement-chest { --alert-top: 62%; }
+    .placement-bottom { --alert-top: 76%; }
+
+    .alert-wrapper {
+      position: absolute;
+      top: var(--alert-top, 56%);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      max-width: 860px;
+      padding: 0 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    /* Deep Ruby / Crimson Translucent Glass Card */
+    .crimson-card {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(225, 29, 72, 0.92) 0%, rgba(159, 18, 57, 0.94) 100%);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 24px;
+      border: 1.5px solid rgba(255, 255, 255, 0.28);
+      box-shadow: 
+        0 24px 60px rgba(159, 18, 57, 0.45),
+        0 8px 24px rgba(0, 0, 0, 0.35),
+        inset 0 1px 1px rgba(255, 255, 255, 0.35);
+      padding: 34px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transform-origin: center center;
+    }
+
+    .alert-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 6px 18px;
+      border-radius: 9999px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Plus Jakarta Sans", sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #ffffff;
+      margin-bottom: 18px;
+    }
+
+    .alert-text {
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Montserrat", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      font-size: 46px;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.015em;
+      text-align: center;
+      word-wrap: break-word;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="crimson-alert">
+    <div class="alert-wrapper" id="alertWrapper">
+      <div class="crimson-card" id="crimsonCard">
+        <div class="alert-tag">
+          <span>🔥 URGENT ALERT</span>
+        </div>
+        <div class="alert-text" id="alertText">{{CAPTION}}</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const caption = window.CAPTION || "{{CAPTION}}";
+      const textEl = document.getElementById('alertText');
+      if (textEl && caption) {
+        textEl.textContent = caption;
+      }
+
+      if (window.PLACEMENT) {
+        const wrapper = document.getElementById('alertWrapper');
+        if (wrapper) {
+          wrapper.className = `alert-wrapper placement-${window.PLACEMENT}`;
+        }
+      }
+
+      if (typeof gsap !== 'undefined') {
+        const tl = gsap.timeline({ paused: true });
+        tl.from('#crimsonCard', {
+          duration: 0.5,
+          scale: 0.85,
+          opacity: 0,
+          y: -25,
+          ease: 'back.out(1.8)',
+        });
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines['crimson-alert'] = tl;
+      }
+    });
+  </script>
+</body>
+</html>

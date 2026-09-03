@@ -78,6 +78,38 @@ I want to run a batch video render for my campaign [YOUR_CAMPAIGN_NAME].
 4. Batch tag: [YOUR_CAMPAIGN_NAME]
 5. Please execute via overlay-text-video-editor, package into an organized zip file, and output the summary table.
 ```
+---
+
+### Prompt E: Sequential Two-Phase Captions with Timed CTA Action Pill
+> **Best for**: Boosting click-through rate (CTR) on B-roll ads by hooking the viewer at second 0 and revealing a targeted action prompt or pointing CTA pill midway through the video.
+
+```text
+Please generate sequential multi-phase video ad creatives using overlay-text-video-editor.
+
+1. Source videos: ./assets/raw_cuts/
+2. Primary Hook Caption: "POV: Walmart gave me a grocery giftcard 😭"
+3. Timed Secondary Action Pill:
+   - Text: "tap below before it gets patched 👇"
+   - Delay: 4.5 seconds (timed to appear midway through the B-roll)
+   - Placement: bottom (directly above platform native ad CTA)
+   - Style: cta-pill
+4. Package into timestamped folders with standardized naming conventions and build a zip archive.
+```
+
+---
+
+### Prompt F: Apple Notes Checklist Card & Headroom B-Roll Placement
+> **Best for**: Remote job offers, software checklists, high-converting listicles, and B-roll with open sky or car headroom negative space.
+
+```text
+Please generate an Apple Notes checklist card creative using overlay-text-video-editor.
+
+1. Source videos: ./assets/raw_cuts/
+2. Style: ios-notes
+3. Placement: top (positions card in upper 22% negative space so the action and subject remain clear)
+4. Caption: "REMOTE DATA ENTRY 29/HR | Laptop provided | Flexible schedule | Apply in bio"
+5. Render and verify the authentic Apple Notes yellow navigation header, yellow highlighter accent, and checklist bullet items.
+```
 
 ---
 

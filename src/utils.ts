@@ -232,6 +232,8 @@ export interface CompositeOptions {
   bitrate?: string;
   sfxAudioPath?: string;
   sfxDelaysMs?: number[];
+  secondaryOverlayPath?: string;
+  secondaryDelaySeconds?: number;
 }
 
 /**
@@ -247,14 +249,24 @@ export async function compositeOverlay(
   ensureDir(path.dirname(outputPath));
 
   const isDarwin = process.platform === 'darwin';
+  const hasSecondary = Boolean(options?.secondaryOverlayPath && fs.existsSync(options.secondaryOverlayPath));
   const hasSfx = Boolean(options?.sfxAudioPath && fs.existsSync(options.sfxAudioPath) && options.sfxDelaysMs && options.sfxDelaysMs.length > 0);
 
   const inputArgs: string[] = ['-y', '-i', videoPath, '-i', overlayImagePath];
+  if (hasSecondary) {
+    inputArgs.push('-i', options!.secondaryOverlayPath!);
+  }
+  const sfxInputIdx = hasSecondary ? 3 : 2;
   if (hasSfx) {
     inputArgs.push('-i', options!.sfxAudioPath!);
   }
 
   let filterComplex = '[0:v][1:v]overlay=0:0[vout]';
+  if (hasSecondary) {
+    const secDelay = options?.secondaryDelaySeconds !== undefined ? options.secondaryDelaySeconds : 4.0;
+    filterComplex = `[0:v][1:v]overlay=0:0[vbase];[vbase][2:v]overlay=0:0:enable='gte(t,${secDelay})'[vout]`;
+  }
+
   let mapArgs: string[] = ['-map', '[vout]'];
   let audioArgs: string[] = ['-c:a', 'copy'];
 
@@ -265,7 +277,7 @@ export async function compositeOverlay(
 
     delays.forEach((delayMs, idx) => {
       const label = `sfx${idx + 1}`;
-      sfxFilterParts.push(`[2:a]adelay=${delayMs}|${delayMs},volume=1.8[${label}]`);
+      sfxFilterParts.push(`[${sfxInputIdx}:a]adelay=${delayMs}|${delayMs},volume=1.8[${label}]`);
       mixInputs.push(`[${label}]`);
     });
 

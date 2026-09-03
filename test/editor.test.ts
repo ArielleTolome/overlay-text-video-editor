@@ -61,11 +61,26 @@ describe('TikTok Video Editor Engine', () => {
 
   describe('CLI Argument Parsing', () => {
     it('should parse styles and custom options correctly', () => {
-      const parsed = parseArgs(['--styles', 'stroke,snapchat,comment', '--concurrency', '4', '--no-zip', '--batch-name', 'summer_campaign']);
-      expect(parsed.styles).toEqual(['stroke', 'snapchat', 'comment']);
+      const parsed = parseArgs([
+        '--styles', 'stroke,snapchat,comment,ios-notes,cta-pill,crimson-alert,staggered-stack',
+        '--concurrency', '4',
+        '--no-zip',
+        '--batch-name', 'summer_campaign',
+        '--placement', 'chest',
+        '--secondary-caption', 'tap below to claim 👇',
+        '--secondary-delay', '4.5',
+        '--secondary-placement', 'bottom',
+        '--secondary-style', 'cta-pill'
+      ]);
+      expect(parsed.styles).toEqual(['stroke', 'snapchat', 'comment', 'ios-notes', 'cta-pill', 'crimson-alert', 'staggered-stack']);
       expect(parsed.concurrency).toBe(4);
       expect(parsed.zip).toBe(false);
       expect(parsed.batchName).toBe('summer_campaign');
+      expect(parsed.placement).toBe('chest');
+      expect(parsed.secondaryCaption).toBe('tap below to claim 👇');
+      expect(parsed.secondaryDelay).toBe(4.5);
+      expect(parsed.secondaryPlacement).toBe('bottom');
+      expect(parsed.secondaryStyle).toBe('cta-pill');
     });
     it('should parse date organization flags', () => {
       const parsed1 = parseArgs(['--no-date-folder']);
@@ -81,7 +96,7 @@ describe('TikTok Video Editor Engine', () => {
   });
 
   describe('Overlay Rendering Engine', () => {
-    it('should render transparent 1080x1920 overlay PNGs for all 13 styles', async () => {
+    it('should render transparent 1080x1920 overlay PNGs for all 17 styles', async () => {
       const renderer = new OverlayRenderer();
       await renderer.init();
 
@@ -99,6 +114,10 @@ describe('TikTok Video Editor Engine', () => {
       const neonPng = path.join(testDir, 'unit_neon.png');
       const bouncePng = path.join(testDir, 'unit_bounce.png');
       const redboxPng = path.join(testDir, 'unit_redbox.png');
+      const iosNotesPng = path.join(testDir, 'unit_ios_notes.png');
+      const ctaPillPng = path.join(testDir, 'unit_cta_pill.png');
+      const crimsonAlertPng = path.join(testDir, 'unit_crimson_alert.png');
+      const staggeredStackPng = path.join(testDir, 'unit_staggered_stack.png');
 
       await renderer.renderOverlay(DEFAULT_CAPTIONS[0], 'stroke', strokePng);
       await renderer.renderOverlay(DEFAULT_CAPTIONS[1], 'card', cardPng);
@@ -113,6 +132,10 @@ describe('TikTok Video Editor Engine', () => {
       await renderer.renderOverlay(DEFAULT_CAPTIONS[4], 'neon', neonPng);
       await renderer.renderOverlay(DEFAULT_CAPTIONS[5], 'capcut-bounce', bouncePng);
       await renderer.renderOverlay(DEFAULT_CAPTIONS[0], 'capcut-redbox', redboxPng);
+      await renderer.renderOverlay('REMOTE DATA ENTRY 29/HR | Laptop provided | Flexible schedule', 'ios-notes', iosNotesPng, { placement: 'top' });
+      await renderer.renderOverlay('tap to get it yourself 👇', 'cta-pill', ctaPillPng, { placement: 'bottom' });
+      await renderer.renderOverlay(DEFAULT_CAPTIONS[1], 'crimson-alert', crimsonAlertPng, { placement: 'chest' });
+      await renderer.renderOverlay('POV: Walmart gave me a grocery giftcard 😭 // tap below before it gets patched 👇', 'staggered-stack', staggeredStackPng, { placement: 'center' });
 
       expect(fs.existsSync(strokePng)).toBe(true);
       expect(fs.existsSync(cardPng)).toBe(true);
@@ -127,7 +150,10 @@ describe('TikTok Video Editor Engine', () => {
       expect(fs.existsSync(neonPng)).toBe(true);
       expect(fs.existsSync(bouncePng)).toBe(true);
       expect(fs.existsSync(redboxPng)).toBe(true);
-
+      expect(fs.existsSync(iosNotesPng)).toBe(true);
+      expect(fs.existsSync(ctaPillPng)).toBe(true);
+      expect(fs.existsSync(crimsonAlertPng)).toBe(true);
+      expect(fs.existsSync(staggeredStackPng)).toBe(true);
       expect(fs.statSync(strokePng).size).toBeGreaterThan(1000);
       expect(fs.statSync(cardPng).size).toBeGreaterThan(1000);
       expect(fs.statSync(snapchatPng).size).toBeGreaterThan(1000);
@@ -141,9 +167,12 @@ describe('TikTok Video Editor Engine', () => {
       expect(fs.statSync(neonPng).size).toBeGreaterThan(1000);
       expect(fs.statSync(bouncePng).size).toBeGreaterThan(1000);
       expect(fs.statSync(redboxPng).size).toBeGreaterThan(1000);
-
+      expect(fs.statSync(iosNotesPng).size).toBeGreaterThan(1000);
+      expect(fs.statSync(ctaPillPng).size).toBeGreaterThan(1000);
+      expect(fs.statSync(crimsonAlertPng).size).toBeGreaterThan(1000);
+      expect(fs.statSync(staggeredStackPng).size).toBeGreaterThan(1000);
       await renderer.close();
-    }, 30000);
+    }, 60000);
   });
 
   describe('Batch Video Editing Pipeline', () => {
@@ -159,18 +188,25 @@ describe('TikTok Video Editor Engine', () => {
       const editor = new VideoEditor({
         captions: sampleCaptions,
         videos: sampleVideos,
-        styles: ['stroke', 'card', 'black-contour', 'twotone', 'bw-stacked', 'minimal-vlog', 'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox', 'snapchat', 'comment', 'ios-barrage'],
+        styles: [
+          'stroke', 'card', 'black-contour', 'twotone', 'bw-stacked', 'minimal-vlog',
+          'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox', 'snapchat', 'comment',
+          'ios-barrage', 'ios-notes', 'cta-pill', 'crimson-alert', 'staggered-stack'
+        ],
+        placement: 'chest',
+        secondaryCaption: 'tap below before it gets patched 👇',
+        secondaryDelay: 4.0,
         outputDir: testOutputDir,
         organizeByDate: false, // test direct output mode
         zip: true,
         zipName: 'test_bundle.zip',
-        concurrency: 2,
+        concurrency: 4,
       });
 
       const manifest = await editor.renderBatch();
 
       expect(manifest.totalCaptions).toBe(1);
-      expect(manifest.totalVideos).toBe(13);
+      expect(manifest.totalVideos).toBe(17);
       expect(manifest.zipFile).toBeDefined();
       expect(manifest.timestamp).toBeDefined();
 
@@ -202,12 +238,25 @@ describe('TikTok Video Editor Engine', () => {
       expect(barrageVideo).toMatch(/^\d{8}_\d{6}_video_1_ios-barrage_c01\.mp4$/);
       expect(twotoneVideo).toMatch(/^\d{8}_\d{6}_video_1_twotone_c01\.mp4$/);
 
+      const iosNotesVideo = filesInCaptionDir.find((f) => f.includes('ios-notes') && f.endsWith('.mp4'));
+      const ctaPillVideo = filesInCaptionDir.find((f) => f.includes('cta-pill') && f.endsWith('.mp4'));
+      const crimsonAlertVideo = filesInCaptionDir.find((f) => f.includes('crimson-alert') && f.endsWith('.mp4'));
+      const staggeredStackVideo = filesInCaptionDir.find((f) => f.includes('staggered-stack') && f.endsWith('.mp4'));
+
+      expect(iosNotesVideo).toBeDefined();
+      expect(ctaPillVideo).toBeDefined();
+      expect(crimsonAlertVideo).toBeDefined();
+      expect(staggeredStackVideo).toBeDefined();
+      expect(iosNotesVideo).toMatch(/^\d{8}_\d{6}_video_1_ios-notes_c01\.mp4$/);
+      expect(ctaPillVideo).toMatch(/^\d{8}_\d{6}_video_1_cta-pill_c01\.mp4$/);
+      expect(crimsonAlertVideo).toMatch(/^\d{8}_\d{6}_video_1_crimson-alert_c01\.mp4$/);
+      expect(staggeredStackVideo).toMatch(/^\d{8}_\d{6}_video_1_staggered-stack_c01\.mp4$/);
       // Verify metadata.json contents
       const metadata = JSON.parse(fs.readFileSync(path.join(captionFolder, 'metadata.json'), 'utf8'));
       expect(metadata.captionText).toBe(sampleCaptions[0]);
-      expect(metadata.videos.length).toBe(13);
+      expect(metadata.videos.length).toBe(17);
       expect(metadata.batchId).toBeDefined();
       expect(metadata.namingConvention).toBeDefined();
-    }, 60000);
+    }, 120000);
   });
 });

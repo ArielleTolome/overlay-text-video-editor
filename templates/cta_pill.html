@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="cta-pill" data-width="1080" data-height="1920" />
+  <title>Floating CTA Action Pill</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans / Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- GSAP for HyperFrames timeline support -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    #stage {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .placement-top { --pill-top: 24%; }
+    .placement-center { --pill-top: 50%; }
+    .placement-chest { --pill-top: 65%; }
+    .placement-bottom { --pill-top: 78%; }
+
+    .pill-wrapper {
+      position: absolute;
+      top: var(--pill-top, 76%);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      max-width: 820px;
+      padding: 0 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    /* Floating Action Capsule */
+    .action-pill {
+      background: #ffffff;
+      color: #000000;
+      border-radius: 9999px;
+      padding: 22px 42px;
+      box-shadow: 
+        0 18px 45px rgba(0, 0, 0, 0.45),
+        0 6px 16px rgba(0, 0, 0, 0.25),
+        0 0 0 2px rgba(255, 255, 255, 0.4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "TikTok Sans", "Montserrat", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -0.015em;
+      text-align: center;
+      line-height: 1.25;
+      transform-origin: center center;
+    }
+
+    .pill-icon {
+      font-size: 42px;
+      display: inline-flex;
+      animation: bounce 1.6s infinite ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="cta-pill">
+    <div class="pill-wrapper" id="pillWrapper">
+      <div class="action-pill" id="actionPill">
+        <span id="pillText">{{CAPTION}}</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function formatPill(rawText) {
+      if (!rawText) return;
+      const textEl = document.getElementById('pillText');
+      if (!textEl) return;
+      let text = rawText.trim();
+      // Ensure text ends with a finger emoji if none exists
+      if (!/[👇🔗👉🔥❤️🤭]/.test(text)) {
+        text += ' 👇';
+      }
+      textEl.textContent = text;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const caption = window.CAPTION || "{{CAPTION}}";
+      formatPill(caption);
+
+      if (window.PLACEMENT) {
+        const wrapper = document.getElementById('pillWrapper');
+        if (wrapper) {
+          wrapper.className = `pill-wrapper placement-${window.PLACEMENT}`;
+        }
+      }
+
+      if (typeof gsap !== 'undefined') {
+        const tl = gsap.timeline({ paused: true });
+        tl.from('#actionPill', {
+          duration: 0.5,
+          scale: 0.75,
+          opacity: 0,
+          y: 20,
+          ease: 'back.out(2.0)',
+        });
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines['cta-pill'] = tl;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -17,7 +17,12 @@ Options:
   --captions-file, -f <p>  Path to text file (one per line) or JSON array of captions
   --videos <list>          Comma-separated list of raw video file paths
   --videos-dir, -d <path>  Directory containing raw video cuts (default: assets/raw_cuts)
-  --styles <styles>        Overlay styles: stroke, card, black-contour, twotone, bw-stacked, minimal-vlog, typewriter, neon, capcut-bounce, capcut-redbox, snapchat, comment, ios-barrage (default: all)
+  --styles <styles>        Overlay styles: stroke, card, black-contour, twotone, bw-stacked, minimal-vlog, typewriter, neon, capcut-bounce, capcut-redbox, snapchat, comment, ios-barrage, ios-notes, cta-pill, crimson-alert, staggered-stack (default: all)
+  --placement <pos>        Vertical placement zone: top, center, chest, bottom (default: native style placement)
+  --secondary-caption <t>  Optional secondary follow-up caption or CTA text to appear sequentially
+  --secondary-delay <sec>  Delay in seconds before secondary caption appears (default: 4.0)
+  --secondary-placement <p> Placement of secondary caption: below, above, bottom (default: below)
+  --secondary-style <s>    Style of secondary caption: cta-pill, card, stroke, etc. (default: cta-pill)
   --sfx <path>             Custom audio chime SFX for iOS notifications (default: authentic iPhone sound)
   --output, -o <dir>       Output directory (default: output)
   --organize-by-date       Organize batches into YYYY-MM-DD/batch_HH-MM-SS folders (default: true)
@@ -48,6 +53,12 @@ Examples:
 
   # Use custom videos directory and output path:
   bun run src/cli.ts -d ./my_cuts -o ./dist
+
+  # Run sequential two-phase captions with timed CTA pill at 4.5 seconds:
+  bun run src/cli.ts --captions "POV: Walmart gave me a grocery giftcard 😭" --secondary-caption "tap below to claim yours 👇" --secondary-delay 4.5
+
+  # Render with top placement (ideal for sky/headroom B-roll) in iOS Notes checklist style:
+  bun run src/cli.ts --styles ios-notes --placement top --captions "REMOTE DATA ENTRY 29/HR | Laptop provided | Flexible schedule"
 `);
 }
 
@@ -90,7 +101,8 @@ export function parseArgs(args: string[]): EditorOptions & { showHelp?: boolean 
         const validStyles: CaptionStyle[] = [
           'stroke', 'card', 'black-contour', 'twotone', 'bw-stacked', 'minimal-vlog',
           'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox',
-          'snapchat', 'comment', 'ios-barrage'
+          'snapchat', 'comment', 'ios-barrage',
+          'ios-notes', 'cta-pill', 'crimson-alert', 'staggered-stack'
         ];
         const parsed = val.split(',').map((s) => s.trim().toLowerCase().replace(/^barrage$/, 'ios-barrage')) as CaptionStyle[];
         options.styles = parsed.filter((s) => validStyles.includes(s));
@@ -118,6 +130,26 @@ export function parseArgs(args: string[]): EditorOptions & { showHelp?: boolean 
       }
     } else if (arg === '--verbose' || arg === '-v') {
       options.verbose = true;
+    } else if (arg === '--placement') {
+      const val = args[++i]?.toLowerCase();
+      if (val === 'top' || val === 'center' || val === 'chest' || val === 'bottom') {
+        options.placement = val;
+      }
+    } else if (arg === '--secondary-caption') {
+      options.secondaryCaption = args[++i];
+    } else if (arg === '--secondary-delay') {
+      const num = parseFloat(args[++i]);
+      if (!isNaN(num) && num >= 0) {
+        options.secondaryDelay = num;
+      }
+    } else if (arg === '--secondary-placement') {
+      const val = args[++i]?.toLowerCase();
+      if (val === 'below' || val === 'above' || val === 'bottom') {
+        options.secondaryPlacement = val;
+      }
+    } else if (arg === '--secondary-style') {
+      const val = args[++i]?.toLowerCase() as CaptionStyle;
+      options.secondaryStyle = val;
     }
   }
 

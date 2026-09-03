@@ -81,23 +81,30 @@ Generate an iOS Notification Storm video using overlay-text-video-editor.
 ## 🚀 Quick CLI Execution Recipes
 
 ```bash
-# Default batch run (all 5 styles across default cuts and captions):
+# Default batch run (all 17 styles across default cuts and captions):
 bun run start
+
+# Sequential two-phase captions with timed CTA pill popping at 4.5s:
+bun run start --captions "POV: Walmart gave me a grocery giftcard 😭" --secondary-caption "tap below before it gets patched 👇" --secondary-delay 4.5
+
+# Apple Notes Checklist Card with top placement (perfect for headroom B-roll):
+bun run start --styles ios-notes --placement top --captions "REMOTE DATA ENTRY 29/HR | Laptop provided | Flexible schedule"
+
+# High-urgency Ruby Translucent Glass Alert:
+bun run start --styles crimson-alert --placement chest --captions "URGENT: Claim before spots close tonight 🚨"
+
+# Two-phase staggered card stack:
+bun run start --styles staggered-stack --captions "pov: testing mobile games paid my rent 🤭 // link is below girlies 👇"
 
 # iOS notification barrage with authentic audio chimes:
 bun run start --styles ios-barrage
-
-# Custom captions inline:
-bun run start --captions "Stop scrolling 💀, Claim your $1400 subsidy card 🛒, Free Walmart hack 😭"
-# Specific styles (e.g. snapchat and comment):
-bun run start --styles "snapchat,comment"
 
 # Custom video cuts directory and campaign batch name:
 bun run start -d ./my_raw_footage --batch-name promo_campaign -o ./campaign_dist
 ```
 ---
 
-## 🎨 Overlay Styles (13 Authentic TikTok, CapCut & Social Styles)
+## 🎨 Overlay Styles (17 Authentic TikTok, CapCut & Social Styles)
 
 ### TikTok Native Text Styles:
 1. **Classic TikTok Stroke (`stroke`)**: High-impact bold white sans-serif with heavy black outline (`-webkit-text-stroke: 4.5px #000`), drop-shadow, and full emoji support (`😭💀`).
@@ -115,6 +122,10 @@ bun run start -d ./my_raw_footage --batch-name promo_campaign -o ./campaign_dist
 11. **CapCut Red Box Highlight (`capcut-redbox`)**: Dramatic high-contrast white text with critical focus words wrapped in a **vibrant red rectangular pill box (`background: #e50914;`)**.
 12. **Snapchat Translucent Bar (`snapchat`)**: Full-width horizontal translucent black banner (`background: rgba(0, 0, 0, 0.65)`, blur) with clean white text centered across the video.
 13. **iOS Notification Storm / Barrage (`ios-barrage`)**: Fast-paced cascading notification bombardment dropping from the top with synchronized authentic iPhone notification audio chimes.
+14. **Apple Notes Checklist Card (`ios-notes`)**: Authentic Apple Notes UI with yellow navigation header (`< Notes`, share icon, circle menu), yellow marker highlighter accent on key figures, and circular radio checklist items.
+15. **Floating Action CTA Pill (`cta-pill`)**: High-converting capsule action pill (`border-radius: 9999px`) with bouncing pointer emoji (`👇`, `🔗`, `👉`) designed to sit right above feed action buttons.
+16. **Ruby Translucent Glass Badge (`crimson-alert`)**: Deep crimson translucent glass card (`background: rgba(190, 18, 60, 0.88)`, `backdrop-filter: blur(24px)`) with glowing alert badge for extreme scroll-stopping power.
+17. **TikTok Staggered Two-Phase Stack (`staggered-stack`)**: Primary hook card at $t=0$ accompanied by a synchronized secondary follow-up card or CTA pill stacked directly beneath.
 All rendered videos follow standardized, timestamped naming conventions:
 
 - **In Caption Subfolders (`captions/<caption_slug>/`)**:

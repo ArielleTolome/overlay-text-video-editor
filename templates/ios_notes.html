@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <meta data-composition-id="ios-notes" data-width="1080" data-height="1920" />
+  <title>iOS Notes App Checklist Card</title>
+
+  <!-- Google Fonts for system font fallback -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+
+  <!-- GSAP for HyperFrames timeline support -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    #stage {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .placement-top { --notes-top: 24%; }
+    .placement-center { --notes-top: 48%; }
+    .placement-chest { --notes-top: 62%; }
+    .placement-bottom { --notes-top: 74%; }
+
+    .notes-wrapper {
+      position: absolute;
+      top: var(--notes-top, 50%);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      max-width: 860px;
+      padding: 0 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    /* Authentic iOS Notes Card */
+    .notes-card {
+      width: 100%;
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 
+        0 24px 50px rgba(0, 0, 0, 0.35),
+        0 8px 18px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      transform-origin: center center;
+    }
+
+    /* iOS Notes Top Navigation Bar */
+    .notes-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 32px 18px 32px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      background: #fafaf9;
+    }
+
+    .notes-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #eab308;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Plus Jakarta Sans", sans-serif;
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .notes-back svg {
+      width: 28px;
+      height: 28px;
+      stroke: #eab308;
+      stroke-width: 3.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .notes-actions {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .notes-action-btn {
+      color: #eab308;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .notes-action-btn svg {
+      width: 34px;
+      height: 34px;
+      stroke: #eab308;
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    /* Notes Content Body */
+    .notes-body {
+      padding: 32px 36px 36px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .notes-title {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+      font-size: 46px;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      color: #111827;
+      word-wrap: break-word;
+    }
+
+    /* Authentic Yellow Marker Highlighter Effect */
+    .notes-highlight {
+      background: linear-gradient(180deg, transparent 42%, rgba(254, 240, 138, 0.95) 42%, rgba(253, 224, 71, 0.95) 92%, transparent 92%);
+      padding: 0 4px;
+      border-radius: 4px;
+    }
+
+    /* Checklist Section */
+    .notes-checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 4px;
+    }
+
+    .notes-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+      font-size: 34px;
+      font-weight: 600;
+      color: #374151;
+      line-height: 1.35;
+    }
+
+    .notes-bullet {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      border-radius: 50%;
+      border: 3px solid #eab308;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+    }
+
+    .notes-item-text {
+      flex: 1;
+      word-wrap: break-word;
+    }
+
+    /* Date Stamp */
+    .notes-date {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Plus Jakarta Sans", sans-serif;
+      font-size: 24px;
+      font-weight: 500;
+      color: #9ca3af;
+      text-align: center;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="ios-notes">
+    <div class="notes-wrapper" id="notesWrapper">
+      <div class="notes-card" id="notesCard">
+        <div class="notes-header">
+          <div class="notes-back">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            <span>Notes</span>
+          </div>
+          <div class="notes-actions">
+            <div class="notes-action-btn">
+              <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+            </div>
+            <div class="notes-action-btn">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="notes-body" id="notesBody">
+          <div class="notes-title" id="notesTitle">{{CAPTION}}</div>
+          <div class="notes-checklist" id="notesChecklist">
+            <!-- Populated via parseCaption or script -->
+          </div>
+          <div class="notes-date" id="notesDate">Today at 9:41 AM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function parseAndFormatNotes(rawText) {
+      if (!rawText) return;
+      const titleEl = document.getElementById('notesTitle');
+      const checklistEl = document.getElementById('notesChecklist');
+      if (!titleEl || !checklistEl) return;
+
+      // Check if caption contains multi-line or pipe or bullet dividers
+      const lines = rawText.split(/\r?\n|\||;/).map(s => s.trim()).filter(Boolean);
+
+      if (lines.length > 1) {
+        // First line is Title with highlight
+        titleEl.innerHTML = `<span class="notes-highlight">${lines[0]}</span>`;
+        checklistEl.innerHTML = '';
+        
+        for (let i = 1; i < lines.length; i++) {
+          const lineText = lines[i].replace(/^[-•*○]\s*/, '');
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'notes-item';
+          itemDiv.innerHTML = `
+            <div class="notes-bullet"></div>
+            <div class="notes-item-text">${lineText}</div>
+          `;
+          checklistEl.appendChild(itemDiv);
+        }
+      } else {
+        // Single sentence caption: highlight first 3 words or numbers/amounts
+        const text = lines[0] || rawText;
+        const highlighted = text.replace(/(\$[\d,]+|\b\d+[\w/]*\b|Remote|Urgent|Warning|Free)/gi, '<span class="notes-highlight">$1</span>');
+        titleEl.innerHTML = highlighted;
+        checklistEl.innerHTML = '';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const caption = window.CAPTION || "{{CAPTION}}";
+      parseAndFormatNotes(caption);
+
+      if (window.PLACEMENT) {
+        const wrapper = document.getElementById('notesWrapper');
+        if (wrapper) {
+          wrapper.className = `notes-wrapper placement-${window.PLACEMENT}`;
+        }
+      }
+
+      // Initialize HyperFrames GSAP timeline
+      if (typeof gsap !== 'undefined') {
+        const tl = gsap.timeline({ paused: true });
+        tl.from('#notesCard', {
+          duration: 0.5,
+          scale: 0.85,
+          opacity: 0,
+          y: -30,
+          ease: 'back.out(1.6)',
+        });
+        tl.from('.notes-item', {
+          duration: 0.35,
+          opacity: 0,
+          x: -15,
+          stagger: 0.1,
+          ease: 'power2.out',
+        }, '-=0.2');
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines['ios-notes'] = tl;
+      }
+    });
+  </script>
+</body>
+</html>

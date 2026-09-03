@@ -1,12 +1,14 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import puppeteer, { type Browser, type Page } from 'puppeteer';
-import type { CaptionStyle } from './types';
+import type { CaptionPlacement, CaptionStyle } from './types';
 import { ensureDir } from './utils';
 
 export interface OverlayRenderOptions {
   top?: string | number;
   size?: string | number;
+  placement?: CaptionPlacement;
+  secondaryCaption?: string;
   strokeTemplatePath?: string;
   cardTemplatePath?: string;
   snapchatTemplatePath?: string;
@@ -20,6 +22,10 @@ export interface OverlayRenderOptions {
   neonTemplatePath?: string;
   capcutBounceTemplatePath?: string;
   capcutRedboxTemplatePath?: string;
+  iosNotesTemplatePath?: string;
+  ctaPillTemplatePath?: string;
+  crimsonAlertTemplatePath?: string;
+  staggeredStackTemplatePath?: string;
 }
 
 export class OverlayRenderer {
@@ -37,6 +43,10 @@ export class OverlayRenderer {
   private neonTemplateHtml: string = '';
   private capcutBounceTemplateHtml: string = '';
   private capcutRedboxTemplateHtml: string = '';
+  private iosNotesTemplateHtml: string = '';
+  private ctaPillTemplateHtml: string = '';
+  private crimsonAlertTemplateHtml: string = '';
+  private staggeredStackTemplateHtml: string = '';
   private overlayCache: Map<string, string> = new Map();
   constructor(private options: OverlayRenderOptions = {}) {}
 
@@ -72,7 +82,10 @@ export class OverlayRenderer {
     const defaultNeonPath = path.resolve(process.cwd(), 'templates/tiktok_neon.html');
     const defaultBouncePath = path.resolve(process.cwd(), 'templates/capcut_bounce.html');
     const defaultRedboxPath = path.resolve(process.cwd(), 'templates/capcut_redbox.html');
-
+    const defaultIosNotesPath = path.resolve(process.cwd(), 'templates/ios_notes.html');
+    const defaultCtaPillPath = path.resolve(process.cwd(), 'templates/cta_pill.html');
+    const defaultCrimsonAlertPath = path.resolve(process.cwd(), 'templates/crimson_alert.html');
+    const defaultStaggeredStackPath = path.resolve(process.cwd(), 'templates/staggered_stack.html');
     const strokePath = this.options.strokeTemplatePath || defaultStrokePath;
     const cardPath = this.options.cardTemplatePath || defaultCardPath;
     const snapchatPath = this.options.snapchatTemplatePath || defaultSnapchatPath;
@@ -86,7 +99,10 @@ export class OverlayRenderer {
     const neonPath = this.options.neonTemplatePath || defaultNeonPath;
     const bouncePath = this.options.capcutBounceTemplatePath || defaultBouncePath;
     const redboxPath = this.options.capcutRedboxTemplatePath || defaultRedboxPath;
-
+    const iosNotesPath = this.options.iosNotesTemplatePath || defaultIosNotesPath;
+    const ctaPillPath = this.options.ctaPillTemplatePath || defaultCtaPillPath;
+    const crimsonAlertPath = this.options.crimsonAlertTemplatePath || defaultCrimsonAlertPath;
+    const staggeredStackPath = this.options.staggeredStackTemplatePath || defaultStaggeredStackPath;
     this.strokeTemplateHtml = fs.existsSync(strokePath) ? fs.readFileSync(strokePath, 'utf8') : this.getFallbackStrokeTemplate();
     this.cardTemplateHtml = fs.existsSync(cardPath) ? fs.readFileSync(cardPath, 'utf8') : this.getFallbackCardTemplate();
     this.snapchatTemplateHtml = fs.existsSync(snapchatPath) ? fs.readFileSync(snapchatPath, 'utf8') : this.getFallbackSnapchatTemplate();
@@ -100,6 +116,10 @@ export class OverlayRenderer {
     this.neonTemplateHtml = fs.existsSync(neonPath) ? fs.readFileSync(neonPath, 'utf8') : this.getFallbackStrokeTemplate();
     this.capcutBounceTemplateHtml = fs.existsSync(bouncePath) ? fs.readFileSync(bouncePath, 'utf8') : this.getFallbackStrokeTemplate();
     this.capcutRedboxTemplateHtml = fs.existsSync(redboxPath) ? fs.readFileSync(redboxPath, 'utf8') : this.getFallbackStrokeTemplate();
+    this.iosNotesTemplateHtml = fs.existsSync(iosNotesPath) ? fs.readFileSync(iosNotesPath, 'utf8') : this.getFallbackIosNotesTemplate();
+    this.ctaPillTemplateHtml = fs.existsSync(ctaPillPath) ? fs.readFileSync(ctaPillPath, 'utf8') : this.getFallbackCtaPillTemplate();
+    this.crimsonAlertTemplateHtml = fs.existsSync(crimsonAlertPath) ? fs.readFileSync(crimsonAlertPath, 'utf8') : this.getFallbackCrimsonAlertTemplate();
+    this.staggeredStackTemplateHtml = fs.existsSync(staggeredStackPath) ? fs.readFileSync(staggeredStackPath, 'utf8') : this.getFallbackStaggeredStackTemplate();
   }
 
   /**
@@ -116,7 +136,9 @@ export class OverlayRenderer {
       await this.init();
     }
 
-    const cacheKey = `${style}:::${caption}:::${customOptions?.top || ''}:::${customOptions?.size || ''}`;
+    const placement = customOptions?.placement || this.options.placement;
+    const secCaption = customOptions?.secondaryCaption || this.options.secondaryCaption || '';
+    const cacheKey = `${style}:::${caption}:::${secCaption}:::${placement || ''}:::${customOptions?.top || ''}:::${customOptions?.size || ''}`;
     if (outputPath && this.overlayCache.has(cacheKey)) {
       const cachedPath = this.overlayCache.get(cacheKey)!;
       if (fs.existsSync(cachedPath)) {
@@ -166,6 +188,18 @@ export class OverlayRenderer {
     } else if (style === 'capcut-redbox') {
       templateHtml = this.capcutRedboxTemplateHtml;
       compId = 'capcut-redbox';
+    } else if (style === 'ios-notes') {
+      templateHtml = this.iosNotesTemplateHtml;
+      compId = 'ios-notes';
+    } else if (style === 'cta-pill') {
+      templateHtml = this.ctaPillTemplateHtml;
+      compId = 'cta-pill';
+    } else if (style === 'crimson-alert') {
+      templateHtml = this.crimsonAlertTemplateHtml;
+      compId = 'crimson-alert';
+    } else if (style === 'staggered-stack') {
+      templateHtml = this.staggeredStackTemplateHtml;
+      compId = 'staggered-stack';
     }
     const safeCaption = JSON.stringify(caption);
     const escapedCaption = caption
@@ -175,10 +209,32 @@ export class OverlayRenderer {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
     let html = templateHtml.replace(/\{\{CAPTION\}\}/g, escapedCaption);
+    const placementTopMap: Record<CaptionPlacement, string> = {
+      top: '22%',
+      center: '46%',
+      chest: '60%',
+      bottom: '76%',
+    };
+    const topValue = placement ? placementTopMap[placement] : (customOptions?.top ? `${customOptions.top}` : '');
+    const placementStyleBlock = topValue ? `
+      <style>
+        :root {
+          --caption-top: ${topValue} !important;
+          --notes-top: ${topValue} !important;
+          --pill-top: ${topValue} !important;
+          --alert-top: ${topValue} !important;
+          --stack-top: ${topValue} !important;
+        }
+      </style>
+    ` : '';
+
     // Prepend script setting window.CAPTION and seeking timeline to steady state
     const injectionScript = `
+      ${placementStyleBlock}
       <script>
         window.CAPTION = ${safeCaption};
+        window.SECONDARY_CAPTION = ${JSON.stringify(secCaption)};
+        window.PLACEMENT = ${JSON.stringify(placement || '')};
         window.addEventListener('DOMContentLoaded', () => {
           const activeCompId = '${compId}';
           if (window.__timelines && window.__timelines[activeCompId]) {
@@ -341,5 +397,20 @@ body { margin:0; width:1080px; height:1920px; background:transparent; display:fl
 </style></head>
 <body><div class="stack"><div class="top">{{CAPTION}}</div><div class="bot">Check this out</div></div></body>
 </html>`;
+  }
+  private getFallbackIosNotesTemplate(): string {
+    return `<!DOCTYPE html><html><head><meta data-composition-id="ios-notes"/><style>body{margin:0;width:1080px;height:1920px;overflow:hidden;background:transparent;display:flex;justify-content:center;align-items:center;}.card{background:#fff;border-radius:24px;padding:32px;max-width:820px;font-family:sans-serif;box-shadow:0 20px 40px rgba(0,0,0,0.3);color:#111;font-size:42px;font-weight:700;}</style></head><body><div class="card">{{CAPTION}}</div></body></html>`;
+  }
+
+  private getFallbackCtaPillTemplate(): string {
+    return `<!DOCTYPE html><html><head><meta data-composition-id="cta-pill"/><style>body{margin:0;width:1080px;height:1920px;overflow:hidden;background:transparent;display:flex;justify-content:center;align-items:flex-end;padding-bottom:200px;}.pill{background:#fff;border-radius:9999px;padding:24px 44px;font-family:sans-serif;box-shadow:0 16px 36px rgba(0,0,0,0.4);color:#000;font-size:38px;font-weight:800;}</style></head><body><div class="pill">{{CAPTION}} 👇</div></body></html>`;
+  }
+
+  private getFallbackCrimsonAlertTemplate(): string {
+    return `<!DOCTYPE html><html><head><meta data-composition-id="crimson-alert"/><style>body{margin:0;width:1080px;height:1920px;overflow:hidden;background:transparent;display:flex;justify-content:center;align-items:center;}.alert{background:rgba(190,18,60,0.92);border-radius:24px;padding:36px;max-width:820px;font-family:sans-serif;box-shadow:0 20px 40px rgba(0,0,0,0.4);color:#fff;font-size:46px;font-weight:800;text-align:center;}</style></head><body><div class="alert">{{CAPTION}}</div></body></html>`;
+  }
+
+  private getFallbackStaggeredStackTemplate(): string {
+    return `<!DOCTYPE html><html><head><meta data-composition-id="staggered-stack"/><style>body{margin:0;width:1080px;height:1920px;overflow:hidden;background:transparent;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:16px;}.p{background:#fff;border-radius:24px;padding:28px 36px;font-family:sans-serif;color:#000;font-size:44px;font-weight:800;}.s{background:#111;border-radius:9999px;padding:18px 32px;font-family:sans-serif;color:#fff;font-size:34px;font-weight:700;}</style></head><body><div class="p">{{CAPTION}}</div><div class="s">tap below to get it yourself 👇</div></body></html>`;
   }
 }

@@ -14,7 +14,7 @@ Batch-renders across $N$ captions $\times$ $M$ raw video cuts $\times$ $K$ overl
 
 ## ✨ Features
 
-- **13 Authentic Social, TikTok & CapCut Overlay Styles**:
+- **17 Authentic Social, TikTok & CapCut Overlay Styles**:
   1. **Classic TikTok Stroke (`stroke`)**: High-impact bold white sans-serif with heavy black outline (`-webkit-text-stroke: 4.5px #000`), drop-shadow, and full emoji support (`😭💀`).
   2. **TikTok Stepped Contour Badge (`card`)**: Authentic white stepped contour badge where each line of text gets its own tight white rounded pill container (`background: #ffffff; color: #000000; border-radius: 20px`).
   3. **TikTok Inverted Black Contour (`black-contour`)**: Dark mode stepped contour badge: Solid black pills hugging each line with bold crisp white text (`background: #000000; color: #ffffff;`).
@@ -28,6 +28,20 @@ Batch-renders across $N$ captions $\times$ $M$ raw video cuts $\times$ $K$ overl
   11. **CapCut Red Box Highlight (`capcut-redbox`)**: Dramatic high-contrast white text with critical focus words wrapped in a **vibrant red rectangular pill box (`background: #e50914;`)**.
   12. **Snapchat Translucent Bar (`snapchat`)**: Full-width horizontal translucent black banner (`background: rgba(0, 0, 0, 0.65)`, blur) with clean white text.
   13. **iOS Notification Storm / Barrage (`ios-barrage`)**: Rapid-fire cascading push notifications dropping from the top with synchronized authentic iPhone notification audio chimes.
+  14. **Apple Notes Checklist Card (`ios-notes`)**: Authentic Apple Notes UI with yellow navigation header (`< Notes`, share icon, circle menu), yellow marker highlighter accent on key figures, and circular radio checklist items.
+  15. **Floating Action CTA Pill (`cta-pill`)**: High-converting capsule action pill (`border-radius: 9999px`) with bouncing pointer emoji (`👇`, `🔗`, `👉`) designed to sit right above feed action buttons.
+  16. **Ruby Translucent Glass Badge (`crimson-alert`)**: Deep crimson translucent glass card (`background: rgba(190, 18, 60, 0.88)`, `backdrop-filter: blur(24px)`) with glowing alert badge for extreme scroll-stopping power.
+  17. **TikTok Staggered Two-Phase Stack (`staggered-stack`)**: Primary hook card at $t=0$ accompanied by a synchronized secondary follow-up card or CTA pill stacked directly beneath.
+- **Multi-Zone B-Roll Placement Engine**: Intelligent placement presets tailored for real B-roll video compositions:
+  - `--placement top` ($Y \approx 22\%$): Sky, ceiling, car windshield negative space (leaves subjects, walking actions, and faces completely unobstructed).
+  - `--placement center` ($Y \approx 46\%$): High-impact ambient and product demo b-roll.
+  - `--placement chest` ($Y \approx 60\%$): Selfie and emotional reaction b-roll (keeps eyes, mouth expressions, and head aesthetic 100% visible).
+  - `--placement bottom` ($Y \approx 76\%$): Lower-third zone sitting directly above native platform ad controls.
+- **Sequential Multi-Caption Timing Engine**: Seamlessly composite timed follow-up captions or CTA action pills that pop in after a configurable delay (e.g. at second 4–5):
+  - `--secondary-caption "tap below to get it yourself 👇"`
+  - `--secondary-delay 4.5` (seconds)
+  - `--secondary-placement bottom`
+  - `--secondary-style cta-pill`
 - **Date & Time Organization**: Organizes batches into structured folders (`output/YYYY-MM-DD/batch_HH-MM-SS/`) with automatic `output/latest` symlink and root zip deliverables.
 - **Standardized Video Naming Conventions**: Clean, searchable filenames for ad managers, media buyers, and automated publishing.
 - **Instant ZIP Packaging & Reports**: Generates per-caption `metadata.json`, `manifest.json`, markdown catalog reports, and zipped distribution bundles.
@@ -123,31 +137,40 @@ Generate social proof video variants using the 'comment' and 'snapchat' overlay 
 ## ⚡ CLI Command Cheatsheet
 
 ```bash
-# 1. Run full standard batch (all 6 viral hooks, all cuts, all 5 styles):
+# 1. Run full standard batch (all default hooks across 17 styles):
 bun run start
 
-# 2. Render only the iOS notification barrage storm with audio chimes:
-bun run start --styles ios-barrage
+# 2. Sequential multi-phase captions with timed CTA pill popping at 4.5s:
+bun run start --captions "POV: Walmart gave me a grocery giftcard 😭" --secondary-caption "tap below before it gets patched 👇" --secondary-delay 4.5
 
-# 3. Render classic TikTok stroke and rounded card styles:
+# 3. Apple Notes Checklist Card with top placement (perfect for headroom B-roll):
+bun run start --styles ios-notes --placement top --captions "REMOTE DATA ENTRY 29/HR | Laptop provided | Flexible schedule"
+
+# 4. High-urgency Ruby Translucent Glass Alert:
+bun run start --styles crimson-alert --placement chest --captions "URGENT: Claim before spots close tonight 🚨"
+
+# 5. Two-phase staggered card stack:
+bun run start --styles staggered-stack --captions "pov: testing mobile games paid my rent 🤭 // link is below girlies 👇"
+
+# 6. Render classic TikTok stroke and rounded card styles:
 bun run start --styles "stroke,card"
 
-# 4. Render with custom inline captions:
+# 7. Render with custom inline captions:
 bun run start --captions "Stop scrolling 💀, Claim your $1400 subsidy card 🛒"
 
-# 5. Render from a text file containing captions (one per line):
+# 8. Render from a text file containing captions (one per line):
 bun run start -f captions.txt
 
-# 6. Attach a custom campaign batch name:
+# 9. Attach a custom campaign batch name:
 bun run start --batch-name summer_promo --captions "Claim your card today 💸"
 
-# 7. Use custom video footage folder and custom output destination:
+# 10. Use custom video footage folder and custom output destination:
 bun run start -d ./my_raw_footage -o ./campaign_dist
 
-# 8. Set custom rendering concurrency (e.g. 4 parallel FFmpeg workers):
+# 11. Set custom rendering concurrency (e.g. 4 parallel FFmpeg workers):
 bun run start --concurrency 4
 
-# 9. Render directly into output root without nested date subfolders:
+# 12. Render directly into output root without nested date subfolders:
 bun run start --no-date-folder
 ```
 
@@ -155,14 +178,16 @@ bun run start --no-date-folder
 
 ```typescript
 import { VideoEditor, batchRender } from './src/editor';
-
 const manifest = await batchRender({
   captions: [
     "lowkey thought this $1400 subsidy card was fake until my Walmart receipt literally said $0.00 😭💀",
-    "if u buy groceries and haven't claimed ur $910 grocery card for seniors yet u are literally throwing away money 😭",
+    "REMOTE DATA ENTRY 29/HR | Laptop provided | Flexible schedule",
   ],
   videosDir: './assets/raw_cuts',
-  styles: ['stroke', 'card'],
+  styles: ['stroke', 'card', 'ios-notes', 'cta-pill', 'crimson-alert', 'staggered-stack'],
+  placement: 'chest',
+  secondaryCaption: 'tap below before it gets patched 👇',
+  secondaryDelay: 4.0,
   outputDir: './output',
   organizeByDate: true,
   batchName: 'ugc_hooks',

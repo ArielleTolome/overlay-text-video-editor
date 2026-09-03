@@ -38,7 +38,16 @@ export class VideoEditor {
       videosDir: options.videosDir || defaultVideosDir,
       styles: options.styles && options.styles.length > 0
         ? options.styles
-        : ['stroke', 'card', 'black-contour', 'twotone', 'bw-stacked', 'minimal-vlog', 'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox', 'snapchat', 'comment', 'ios-barrage'],
+        : [
+            'stroke', 'card', 'black-contour', 'twotone', 'bw-stacked', 'minimal-vlog',
+            'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox', 'snapchat', 'comment',
+            'ios-barrage', 'ios-notes', 'cta-pill', 'crimson-alert', 'staggered-stack'
+          ],
+      placement: options.placement,
+      secondaryCaption: options.secondaryCaption || '',
+      secondaryDelay: options.secondaryDelay !== undefined ? options.secondaryDelay : 4.0,
+      secondaryPlacement: options.secondaryPlacement || 'below',
+      secondaryStyle: options.secondaryStyle || 'cta-pill',
       outputDir: options.outputDir || defaultOutput,
       organizeByDate: options.organizeByDate !== undefined ? options.organizeByDate : true,
       batchName: options.batchName || '',
@@ -58,6 +67,10 @@ export class VideoEditor {
       neonTemplatePath: options.neonTemplatePath || '',
       capcutBounceTemplatePath: options.capcutBounceTemplatePath || '',
       capcutRedboxTemplatePath: options.capcutRedboxTemplatePath || '',
+      iosNotesTemplatePath: options.iosNotesTemplatePath || '',
+      ctaPillTemplatePath: options.ctaPillTemplatePath || '',
+      crimsonAlertTemplatePath: options.crimsonAlertTemplatePath || '',
+      staggeredStackTemplatePath: options.staggeredStackTemplatePath || '',
       sfxPath: options.sfxPath || path.resolve(process.cwd(), 'assets/sfx/iphone_notification_clean.wav'),
       verbose: options.verbose || false,
     };
@@ -76,6 +89,12 @@ export class VideoEditor {
       neonTemplatePath: this.options.neonTemplatePath,
       capcutBounceTemplatePath: this.options.capcutBounceTemplatePath,
       capcutRedboxTemplatePath: this.options.capcutRedboxTemplatePath,
+      iosNotesTemplatePath: this.options.iosNotesTemplatePath,
+      ctaPillTemplatePath: this.options.ctaPillTemplatePath,
+      crimsonAlertTemplatePath: this.options.crimsonAlertTemplatePath,
+      staggeredStackTemplatePath: this.options.staggeredStackTemplatePath,
+      placement: this.options.placement,
+      secondaryCaption: this.options.secondaryCaption,
     });
   }
 
@@ -172,12 +191,33 @@ export class VideoEditor {
 
       for (const style of styles) {
         const overlayPath = path.join(tempOverlaysDir, `${slug}_${style}.png`);
-        await this.renderer.renderOverlay(captionText, style, overlayPath);
+        await this.renderer.renderOverlay(captionText, style, overlayPath, {
+          placement: this.options.placement,
+          secondaryCaption: this.options.secondaryCaption,
+        });
         overlayMap[style][captionText] = overlayPath;
         if (this.options.verbose) {
           console.log(`   [✓] Generated ${style} overlay for [${slug}]`);
         }
       }
+    }
+
+    // If secondary caption is specified, render the timed secondary overlay
+    const secOverlayMap: Record<string, string> = {};
+    if (this.options.secondaryCaption) {
+      console.log(`⏱️  Rendering secondary timed overlay ("${this.options.secondaryCaption}" at ${this.options.secondaryDelay}s)...`);
+      const secStyle = this.options.secondaryStyle || 'cta-pill';
+      const secPlacement = this.options.secondaryPlacement === 'above' ? 'chest' : (this.options.secondaryPlacement === 'top' ? 'top' : 'bottom');
+      for (let cIdx = 0; cIdx < captions.length; cIdx++) {
+        const captionText = captions[cIdx];
+        const slug = slugify(captionText, cIdx);
+        const secOverlayPath = path.join(tempOverlaysDir, `${slug}_sec_${secStyle}.png`);
+        await this.renderer.renderOverlay(this.options.secondaryCaption, secStyle, secOverlayPath, {
+          placement: secPlacement,
+        });
+        secOverlayMap[captionText] = secOverlayPath;
+      }
+      console.log(`   ✓ Rendered secondary timed overlay assets.\n`);
     }
     console.log(`   ✓ Rendered all ${captions.length * styles.length} transparent overlay assets.\n`);
 
@@ -196,6 +236,7 @@ export class VideoEditor {
       standardFileName: string;
       standardFlatFileName: string;
       overlayPath: string;
+      secondaryOverlayPath?: string;
       captionFolder: string;
       outputVideoPath: string;
       flatVideoPath: string;
@@ -241,6 +282,7 @@ export class VideoEditor {
             standardFileName: captionFolderFileName,
             standardFlatFileName: allVideosFileName,
             overlayPath,
+            secondaryOverlayPath: secOverlayMap[captionText],
             captionFolder,
             outputVideoPath,
             flatVideoPath,
@@ -262,6 +304,8 @@ export class VideoEditor {
       await compositeOverlay(task.rawVideoPath, task.overlayPath, task.outputVideoPath, {
         sfxAudioPath: isIosBarrage ? sfxAudio : undefined,
         sfxDelaysMs: isIosBarrage ? [600, 1300, 2000, 2700, 3400] : undefined,
+        secondaryOverlayPath: task.secondaryOverlayPath,
+        secondaryDelaySeconds: this.options.secondaryDelay,
       });
       if (fs.existsSync(task.flatVideoPath)) {
         fs.unlinkSync(task.flatVideoPath);
@@ -292,6 +336,9 @@ export class VideoEditor {
         captionSlug: task.captionSlug,
         captionShortSlug: task.captionShortSlug,
         style: task.style,
+        placement: this.options.placement,
+        secondaryCaption: this.options.secondaryCaption || undefined,
+        secondaryDelay: this.options.secondaryCaption ? this.options.secondaryDelay : undefined,
         rawVideoPath: task.rawVideoPath,
         rawVideoName: task.rawVideoName,
         videoTag: task.rawVideoName,

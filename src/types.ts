@@ -1,4 +1,23 @@
-export type CaptionStyle = 'stroke' | 'card' | 'black-contour' | 'twotone' | 'bw-stacked' | 'minimal-vlog' | 'typewriter' | 'neon' | 'capcut-bounce' | 'capcut-redbox' | 'snapchat' | 'comment' | 'ios-barrage';
+export type CaptionStyle = 
+  | 'stroke' 
+  | 'card' 
+  | 'black-contour' 
+  | 'twotone' 
+  | 'bw-stacked' 
+  | 'minimal-vlog' 
+  | 'typewriter' 
+  | 'neon' 
+  | 'capcut-bounce' 
+  | 'capcut-redbox' 
+  | 'snapchat' 
+  | 'comment' 
+  | 'ios-barrage'
+  | 'ios-notes'
+  | 'cta-pill'
+  | 'crimson-alert'
+  | 'staggered-stack';
+
+export type CaptionPlacement = 'top' | 'center' | 'chest' | 'bottom';
 export interface EditorOptions {
   /** List of captions to process. Defaults to DEFAULT_CAPTIONS */
   captions?: string[];
@@ -8,8 +27,18 @@ export interface EditorOptions {
   videos?: string[];
   /** Directory containing raw video cuts. Defaults to 'assets/raw_cuts' */
   videosDir?: string;
-  /** Styles to generate ('stroke', 'card', 'black-contour', 'twotone', 'bw-stacked', 'minimal-vlog', 'typewriter', 'neon', 'capcut-bounce', 'capcut-redbox', 'snapchat', 'comment', 'ios-barrage'). Defaults to all */
+  /** Styles to generate. Defaults to all 17 styles */
   styles?: CaptionStyle[];
+  /** Vertical placement zone ('top', 'center', 'chest', 'bottom'). Defaults to style native placement */
+  placement?: CaptionPlacement;
+  /** Optional secondary follow-up caption or CTA text to appear sequentially */
+  secondaryCaption?: string;
+  /** Delay in seconds before secondary caption appears (e.g. 4.0). Defaults to 4.0 */
+  secondaryDelay?: number;
+  /** Placement of secondary caption ('below', 'above', 'bottom'). Defaults to 'below' */
+  secondaryPlacement?: 'below' | 'above' | 'bottom';
+  /** Style of secondary caption ('pill', 'card', 'stroke', etc.). Defaults to 'cta-pill' */
+  secondaryStyle?: CaptionStyle;
   /** Output directory. Defaults to 'output' */
   outputDir?: string;
   /** Whether to organize outputs into date and time folders. Defaults to true */
@@ -48,6 +77,14 @@ export interface EditorOptions {
   capcutBounceTemplatePath?: string;
   /** Path to custom CapCut red box template HTML */
   capcutRedboxTemplatePath?: string;
+  /** Path to custom iOS notes template HTML */
+  iosNotesTemplatePath?: string;
+  /** Path to custom CTA pill template HTML */
+  ctaPillTemplatePath?: string;
+  /** Path to custom crimson alert template HTML */
+  crimsonAlertTemplatePath?: string;
+  /** Path to custom staggered stack template HTML */
+  staggeredStackTemplatePath?: string;
   /** Custom notification audio file path */
   sfxPath?: string;
   verbose?: boolean;
@@ -65,7 +102,9 @@ export interface RenderedVideoItem {
   captionSlug: string;
   captionShortSlug: string;
   style: CaptionStyle;
-  rawVideoPath: string;
+  placement?: CaptionPlacement;
+  secondaryCaption?: string;
+  secondaryDelay?: number;
   rawVideoName: string;
   videoTag: string;
   outputPath: string;
