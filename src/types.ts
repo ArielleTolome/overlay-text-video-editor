@@ -324,6 +324,23 @@ export const REACTION_HOOK_PRESETS: Record<string, string[]> = {
     "I did NOT expect it to work this well",
     "watch until the end to see what it actually did",
   ],
+  'dancing': [
+    "me dancing knowing I haven't paid full price for groceries in 6 months 💅",
+    "how I sleep at night knowing this one app pays my rent 🤭✨",
+    "not a single care in the world after finding this hack 💃",
+    "gatekeeping this should literally be illegal 😭✨",
+    "POV: you finally found the app that does it all for you",
+    "the peace of mind when your bills are on autopilot 💅",
+    "my friends asking why I'm always happy lately... it's literally this app 💀",
+    "girls who get it, get it... search [App Name] on App Store 📲",
+  ],
+  'grocery': [
+    "my Walmart receipt literally said $0.00 because of this 💸",
+    "POV: groceries literally cost zero dollars right now 🛒",
+    "stop paying full price for groceries when everyone uses this hack 💀",
+    "scanned my cart in 5 seconds and got $80 off checkout 😭",
+    "found the grocery loophole before they patch it 🏃‍♀️💨",
+  ],
 };
 
 export function getReactionHookForEmotion(emotion: string, index = 0): string {
