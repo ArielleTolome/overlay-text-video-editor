@@ -3,6 +3,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { CLIProxyClient } from './ai';
 import { VideoEditor } from './editor';
+import { SessionMemory } from './session';
 import { UGCStitcher, listAvailableReactionHooks } from './stitcher';
 import type { CaptionStyle, EditorOptions, TextOverlaySegment } from './types';
 import { DEFAULT_CAPTIONS } from './types';
@@ -50,7 +51,13 @@ UGC Stitcher Mode (Reaction Hook + App Demo + CTA):
   --tts <text>             Voiceover script text (synthesized via Fish Audio)
   --music <url|path>       TikTok trending music (downloaded via yt-dlp) or local MP3
   --music-vol <num>        Background music ducking volume (default: 0.20)
-  --generate-script        Auto-generate 3-block script using CLIProxyAPI / Gemini
+  --score                  Calculate virality score (0-100) using CLIProxyAPI / Gemini
+  --grade <preset|auto>    Color grade: neutral_punch, warm_cinematic, vibrant_pop, moody, auto
+  --zoom-punch             Dynamic 1.08x punch-in zoom on hook beat
+  --highlight <x,y,[r]>    Attention highlight ring at coordinates (e.g. 540,960,80)
+  --self-eval              Run automated self-evaluation (volume, resolution, framerate, safe zone)
+  --session, --memory      Show persistent session memory & learned preferences
+  --list-hooks             List all local reaction hook clips and emotions
   --app-name <name>        App name for AI script generation
   --niche <niche>          Niche for AI script generation (e.g. utility, fitness, grocery)
   --score                  Calculate virality score (0-100) using CLIProxyAPI / Gemini
@@ -203,6 +210,16 @@ export function parseArgs(args: string[]): EditorOptions & { showHelp?: boolean 
       options.niche = args[++i];
     } else if (arg === '--score') {
       options.scoreVirality = true;
+    } else if (arg === '--grade' || arg === '--color-grade') {
+      options.colorGrade = args[++i];
+    } else if (arg === '--zoom-punch') {
+      options.zoomPunch = true;
+    } else if (arg === '--highlight') {
+      options.highlight = args[++i];
+    } else if (arg === '--self-eval' || arg === '--eval') {
+      options.selfEval = true;
+    } else if (arg === '--session' || arg === '--memory') {
+      options.showSession = true;
     } else if (arg === '--list-hooks') {
       options.listHooks = true;
     }
@@ -217,6 +234,11 @@ async function run(): Promise<void> {
 
   if (parsed.showHelp) {
     printHelp();
+    process.exit(0);
+  }
+  if (parsed.showSession) {
+    const session = new SessionMemory();
+    console.log('\n' + session.exportMarkdown());
     process.exit(0);
   }
 
@@ -302,7 +324,24 @@ async function run(): Promise<void> {
     }
     if (parsed.ctaClip) console.log(`  • CTA Clip: ${path.basename(parsed.ctaClip)}`);
     if (parsed.musicSource) console.log(`  • Music: ${parsed.musicSource} (ducked @ ${parsed.musicVolume || 0.2})`);
+    if (parsed.colorGrade) console.log(`  • Color Grade: ${parsed.colorGrade}`);
+    if (parsed.zoomPunch) console.log(`  • Animation: Dynamic Zoom Punch (1.08x)`);
+    if (parsed.highlight) console.log(`  • Highlight Ring: ${parsed.highlight}`);
     if (ttsText) console.log(`  • Voiceover TTS: "${ttsText.slice(0, 40)}..."`);
+
+    let highlightRingConfig: any = undefined;
+    if (parsed.highlight) {
+      const parts = parsed.highlight.split(',').map((p) => parseFloat(p.trim())).filter((n) => !isNaN(n));
+      if (parts.length >= 2) {
+        highlightRingConfig = {
+          x: parts[0]!,
+          y: parts[1]!,
+          radius: parts[2] || 70,
+          startTime: 1.0,
+          endTime: Math.min(4.0, totalEst),
+        };
+      }
+    }
 
     const res = await stitcher.stitch({
       hookClip: hookPath,
@@ -315,10 +354,28 @@ async function run(): Promise<void> {
       ttsText,
       musicSource: parsed.musicSource,
       musicVolume: parsed.musicVolume || 0.2,
+      colorGrade: parsed.colorGrade,
+      zoomPunch: parsed.zoomPunch ? { startTime: 1.2, duration: 0.6, zoomFactor: 1.08 } : undefined,
+      highlightRing: highlightRingConfig,
+      selfEval: parsed.selfEval,
       verbose: parsed.verbose,
     });
 
     console.log(`\n✅ Stitched output rendered successfully: ${res.outputPath} (${res.totalDuration.toFixed(1)}s)`);
+
+    if (res.evalReport) {
+      console.log('\n🔍 Automated Self-Evaluation Quality Report:');
+      console.log(`  • Overall Status: ${res.evalReport.passed ? '✅ PASSED' : '⚠️ REVIEW NEEDED'} (Score: ${res.evalReport.score}/100)`);
+      for (const chk of res.evalReport.checks) {
+        console.log(`    ${chk.passed ? '✓' : '✗'} [${chk.name}]: ${chk.message}`);
+      }
+      if (res.evalReport.recommendations.length > 0) {
+        console.log(`  • Recommendations:`);
+        for (const rec of res.evalReport.recommendations) {
+          console.log(`    - ${rec}`);
+        }
+      }
+    }
 
     if (parsed.scoreVirality) {
       console.log('\n📊 Scoring virality with Gemini / CLIProxyAPI...');

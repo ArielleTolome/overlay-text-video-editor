@@ -49,6 +49,10 @@ Batch-renders across $N$ captions $\times$ $M$ raw video cuts $\times$ $K$ overl
 - **Fish Audio Open Source & Cloud TTS**: Replaces proprietary voiceover services with open-source `fish-speech` / Cloud REST API, auto-scaled with FFmpeg `atempo` duration fitting.
 - **CLIProxyAPI & Gemini Video Intelligence**: Automated 3-block UGC script generation and 0–100 virality scoring powered by Gemini via CLIProxyAPI protocol translation.
 - **TikTok Music Extraction & Audio Ducking**: Downloads trending TikTok/YouTube audio via `yt-dlp`, normalizes to -16 LUFS, and dynamically ducks background music under voiceovers.
+- **Auto Color Grading & Presets (`--grade`)**: Native mathematical correction via `signalstats` (`--grade auto`) plus tailored presets: `neutral_punch`, `warm_cinematic`, `vibrant_pop`, `moody`, `retro_glow`.
+- **Dynamic Animation Overlays**: Smooth mathematical zoom punch (`--zoom-punch`, 1.08x dynamic half-sine pulse) and glowing pulsing highlight rings (`--highlight <x,y,r>`) to emphasize UI buttons or product details.
+- **Persistent Session Memory (`output/project.md`)**: Remembers user preferences, top-performing hooks, and previous runs across sessions in JSON and human-readable Markdown.
+- **Automated Self-Evaluation Loop (`--self-eval`)**: Automatically audits rendered video for vertical format, 30fps stability, timeline duration, audio volume levels, and digital clipping before delivery.
 - **Date & Time Organization**: Organizes batches into structured folders (`output/YYYY-MM-DD/batch_HH-MM-SS/`) with automatic `output/latest` symlink and root zip deliverables.
 - **Standardized Video Naming Conventions**: Clean, searchable filenames for ad managers, media buyers, and automated publishing.
 - **Instant ZIP Packaging & Reports**: Generates per-caption `metadata.json`, `manifest.json`, markdown catalog reports, and zipped distribution bundles.

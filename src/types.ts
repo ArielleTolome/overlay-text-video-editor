@@ -51,6 +51,10 @@ export interface StitchOptions {
   musicSource?: string;
   musicVolume?: number;
   verbose?: boolean;
+  colorGrade?: string;
+  zoomPunch?: { startTime?: number; duration?: number; zoomFactor?: number };
+  highlightRing?: { x: number; y: number; radius?: number; color?: string; label?: string; startTime?: number; endTime?: number };
+  selfEval?: boolean;
 }
 
 export interface AIEngineConfig {
@@ -168,11 +172,15 @@ export interface EditorOptions {
   niche?: string;
   scoreVirality?: boolean;
   listHooks?: boolean;
+  colorGrade?: string;
+  zoomPunch?: boolean;
+  highlight?: string;
+  selfEval?: boolean;
+  showSession?: boolean;
 }
 
 export interface RenderedVideoItem {
   id: string;
-  standardFileName: string;
   standardFlatFileName: string;
   date: string;
   time: string;

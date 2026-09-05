@@ -2,8 +2,12 @@ import { spawn } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { CLIProxyClient, FishAudioClient } from './ai';
+import { applyHighlightRing, applyZoomPunch } from './animation';
 import { downloadTikTokMusic, mixAudioWithDucking, prepareMusicBed } from './audio';
+import { SelfEvaluator, type SelfEvalReport } from './evaluator';
+import { applyColorGrade } from './grade';
 import { OverlayRenderer } from './renderer';
+import { SessionMemory } from './session';
 import type { StitchOptions } from './types';
 
 function runFFmpeg(args: string[]): Promise<{ stdout: string; stderr: string }> {
@@ -41,11 +45,15 @@ export class UGCStitcher {
   public readonly overlayRenderer: OverlayRenderer;
   public readonly ttsClient: FishAudioClient;
   public readonly aiClient: CLIProxyClient;
+  public readonly sessionMemory: SessionMemory;
+  public readonly evaluator: SelfEvaluator;
 
   constructor() {
     this.overlayRenderer = new OverlayRenderer();
     this.ttsClient = new FishAudioClient();
     this.aiClient = new CLIProxyClient();
+    this.sessionMemory = new SessionMemory();
+    this.evaluator = new SelfEvaluator();
   }
 
   /**
@@ -193,7 +201,7 @@ export class UGCStitcher {
    * Block 3: Climax / CTA clip (e.g. 12-15s)
    * With text overlays, voiceover, and ducked TikTok music bed.
    */
-  async stitch(options: StitchOptions): Promise<{ outputPath: string; totalDuration: number }> {
+  async stitch(options: StitchOptions): Promise<{ outputPath: string; totalDuration: number; evalReport?: SelfEvalReport }> {
     const {
       hookClip,
       demoClips = [],
@@ -382,10 +390,68 @@ export class UGCStitcher {
         targetDuration: totalDuration,
         outputPath: outputVideo,
       });
+      // 9. Apply Color Grade (if requested)
+      if (options.colorGrade && options.colorGrade !== 'none') {
+        const gradedOut = path.join(workDir, 'graded_final.mp4');
+        await applyColorGrade({
+          inputVideo: outputVideo,
+          presetOrFilter: options.colorGrade,
+          outputVideo: gradedOut,
+        });
+        fs.copyFileSync(gradedOut, outputVideo);
+      }
+
+      // 10. Apply Zoom Punch (if requested)
+      if (options.zoomPunch) {
+        const zoomOut = path.join(workDir, 'zoom_final.mp4');
+        await applyZoomPunch(outputVideo, zoomOut, {
+          startTime: options.zoomPunch.startTime ?? 1.5,
+          duration: options.zoomPunch.duration ?? 0.6,
+          zoomFactor: options.zoomPunch.zoomFactor ?? 1.08,
+        });
+        fs.copyFileSync(zoomOut, outputVideo);
+      }
+
+      // 11. Apply Highlight Ring (if requested)
+      if (options.highlightRing) {
+        const ringOut = path.join(workDir, 'ring_final.mp4');
+        await applyHighlightRing(outputVideo, ringOut, {
+          x: options.highlightRing.x,
+          y: options.highlightRing.y,
+          radius: options.highlightRing.radius ?? 60,
+          color: options.highlightRing.color ?? '#ffe600',
+          label: options.highlightRing.label,
+          startTime: options.highlightRing.startTime ?? 0,
+          endTime: options.highlightRing.endTime ?? totalDuration,
+        });
+        fs.copyFileSync(ringOut, outputVideo);
+      }
+
+      // 12. Run Self-Evaluation (if requested)
+      let evalReport: SelfEvalReport | undefined;
+      if (options.selfEval) {
+        evalReport = await this.evaluator.evaluate(outputVideo, totalDuration);
+      }
+
+      // 13. Persist session memory & run history
+      const hookName = typeof hookClip === 'string' ? path.basename(hookClip) : path.basename(hookClip.path);
+      const hookEmotion = hookName.startsWith('hero-sp-')
+        ? hookName.replace(/^hero-sp-\d+-/, '').replace(/\.mp4$/, '')
+        : undefined;
+
+      this.sessionMemory.recordRun({
+        outputVideo,
+        duration: totalDuration,
+        hookEmotion,
+        demoClip: demoClips[0] ? (typeof demoClips[0] === 'string' ? demoClips[0] : demoClips[0].path) : undefined,
+        colorGrade: options.colorGrade,
+        evalPassed: evalReport ? evalReport.passed : undefined,
+      });
 
       return {
         outputPath: outputVideo,
         totalDuration,
+        evalReport,
       };
     } finally {
       try {

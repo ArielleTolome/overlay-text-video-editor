@@ -116,6 +116,12 @@ bun run start --stitch --hook jaw-drop --demo assets/raw_cuts/video_1.mp4 --hook
 
 # Full automated UGC pipeline (CLIProxyAPI script + Fish Audio TTS + ducked music):
 bun run start --stitch --hook shook --demo assets/raw_cuts/video_2.mp4 --generate-script --app-name "BitePal" --niche "grocery" --music assets/reference_videos/format-01-reaction-cz8qqcpn.mp4 --music-vol 0.20 --score
+
+# Auto color grading + animated zoom-punch + attention highlight ring + self-evaluation:
+bun run start --stitch --hook shook --demo assets/raw_cuts/video_1.mp4 --hook-dur 2.5 --demo-dur 4.0 --grade vibrant_pop --zoom-punch --highlight 540,960,80 --self-eval
+
+# View persistent session memory & learned preferences across editing runs:
+bun run start --session
 ```
 ---
 
