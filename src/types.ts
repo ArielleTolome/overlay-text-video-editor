@@ -18,6 +18,70 @@ export type CaptionStyle =
   | 'staggered-stack';
 
 export type CaptionPlacement = 'top' | 'center' | 'chest' | 'bottom';
+
+export interface ClipSegment {
+  path: string;
+  start?: number; // seconds
+  duration?: number; // seconds
+  speed?: number; // speed multiplier (e.g. 1.0, 2.0)
+  label?: string; // 'hook' | 'demo' | 'cta' | string
+}
+
+export interface TextOverlaySegment {
+  text: string;
+  start: number;
+  end: number;
+  style?: CaptionStyle;
+  placement?: CaptionPlacement;
+  emphasisWords?: string[];
+}
+
+export interface StitchOptions {
+  hookClip: string | ClipSegment;
+  demoClips: (string | ClipSegment)[];
+  ctaClip?: string | ClipSegment;
+  hookDuration?: number;
+  demoDuration?: number;
+  ctaDuration?: number;
+  outputVideo: string;
+  targetDuration?: number;
+  textOverlays?: TextOverlaySegment[];
+  ttsText?: string;
+  ttsVoice?: string;
+  musicSource?: string;
+  musicVolume?: number;
+  verbose?: boolean;
+}
+
+export interface AIEngineConfig {
+  cliproxyUrl?: string;
+  geminiApiKey?: string;
+  fishAudioUrl?: string;
+  fishAudioApiKey?: string;
+}
+
+export interface ScriptConcept {
+  appName: string;
+  niche: string;
+  hookEmotion: string;
+  hookText: string;
+  demoVoiceover: string;
+  ctaText: string;
+  emphasisWords: string[];
+}
+
+export interface ViralityReport {
+  overallScore: number;
+  hookStrength: number;
+  emotionalImpact: number;
+  pacingFlow: number;
+  textReadability: number;
+  completionLikelihood: number;
+  shareability: number;
+  topStrength: string;
+  topWeakness: string;
+  improvementTip: string;
+}
 export interface EditorOptions {
   /** List of captions to process. Defaults to DEFAULT_CAPTIONS */
   captions?: string[];
@@ -88,6 +152,22 @@ export interface EditorOptions {
   /** Custom notification audio file path */
   sfxPath?: string;
   verbose?: boolean;
+  stitchMode?: boolean;
+  hookClip?: string;
+  demoClip?: string;
+  ctaClip?: string;
+  hookDuration?: number;
+  demoDuration?: number;
+  hookText?: string;
+  ctaText?: string;
+  ttsText?: string;
+  musicSource?: string;
+  musicVolume?: number;
+  generateScript?: boolean;
+  appName?: string;
+  niche?: string;
+  scoreVirality?: boolean;
+  listHooks?: boolean;
 }
 
 export interface RenderedVideoItem {

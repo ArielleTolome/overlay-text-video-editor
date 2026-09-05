@@ -42,10 +42,16 @@ Batch-renders across $N$ captions $\times$ $M$ raw video cuts $\times$ $K$ overl
   - `--secondary-delay 4.5` (seconds)
   - `--secondary-placement bottom`
   - `--secondary-style cta-pill`
+- **Multi-Clip UGC Stitcher Engine**: Combines 3-block video structures (Hook $\rightarrow$ Proof/Meat $\rightarrow$ CTA) into high-converting 1080×1920 30fps vertical video:
+  - Slices handheld human reaction clips (jaw-drop, belly-laugh, shook, hyped) as scroll-stopping hooks.
+  - Cuts in screen recordings, app gameplay, website walk-throughs, or grocery/lifestyle B-roll as proof.
+  - Inserts call-to-action clips and converts viewers with Green Zone-compliant overlays.
+- **Fish Audio Open Source & Cloud TTS**: Replaces proprietary voiceover services with open-source `fish-speech` / Cloud REST API, auto-scaled with FFmpeg `atempo` duration fitting.
+- **CLIProxyAPI & Gemini Video Intelligence**: Automated 3-block UGC script generation and 0–100 virality scoring powered by Gemini via CLIProxyAPI protocol translation.
+- **TikTok Music Extraction & Audio Ducking**: Downloads trending TikTok/YouTube audio via `yt-dlp`, normalizes to -16 LUFS, and dynamically ducks background music under voiceovers.
 - **Date & Time Organization**: Organizes batches into structured folders (`output/YYYY-MM-DD/batch_HH-MM-SS/`) with automatic `output/latest` symlink and root zip deliverables.
 - **Standardized Video Naming Conventions**: Clean, searchable filenames for ad managers, media buyers, and automated publishing.
 - **Instant ZIP Packaging & Reports**: Generates per-caption `metadata.json`, `manifest.json`, markdown catalog reports, and zipped distribution bundles.
-
 ---
 
 ## 🏷️ Standardized Naming Conventions
@@ -172,7 +178,15 @@ bun run start --concurrency 4
 
 # 12. Render directly into output root without nested date subfolders:
 bun run start --no-date-folder
-```
+
+# 13. List all local reaction hooks and emotions:
+bun run start --list-hooks
+
+# 14. Stitch a reaction hook + app demo with custom overlays and virality score:
+bun run start --stitch --hook jaw-drop --demo assets/raw_cuts/video_1.mp4 --hook-dur 2.5 --demo-dur 4.0 --hook-text "my honest reaction after finding this app 💀" --cta-text "try it free on App Store 👇" --score
+
+# 15. Full AI-driven UGC Ad Pipeline (CLIProxyAPI script + Fish Audio TTS + ducked music):
+bun run start --stitch --hook shook --demo assets/raw_cuts/video_2.mp4 --generate-script --app-name "BitePal" --niche "grocery" --music assets/reference_videos/format-01-reaction-cz8qqcpn.mp4 --music-vol 0.20 --score
 
 ## 💻 Programmatic API
 

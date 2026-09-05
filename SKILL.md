@@ -76,6 +76,15 @@ Generate an iOS Notification Storm video using overlay-text-video-editor.
 3. Output the 1080x1920 30fps MP4 video to ./output/examples/ and verify audio sync and visuals.
 ```
 
+### 🎬 Prompt 4: Multi-Clip UGC Stitcher (Reaction Hook + App Gameplay Demo + CTA)
+```text
+Use the UGC stitcher in overlay-text-video-editor to produce a high-converting 3-block ad video.
+1. Pick a reaction hook (e.g. 'jaw-drop' or 'shook' from the local hook library).
+2. Cut in my app gameplay/screen recording from ./assets/raw_cuts/video_1.mp4.
+3. Generate a 3-block script via CLIProxyAPI / Gemini and voiceover with Fish Audio.
+4. Mix in trending TikTok background music ducked under the speech at 20% volume.
+5. Score virality and export the finished 1080x1920 30fps MP4.
+```
 ---
 
 ## 🚀 Quick CLI Execution Recipes
@@ -101,6 +110,12 @@ bun run start --styles ios-barrage
 
 # Custom video cuts directory and campaign batch name:
 bun run start -d ./my_raw_footage --batch-name promo_campaign -o ./campaign_dist
+
+# Multi-clip UGC stitcher (reaction hook + app demo + text overlays + virality score):
+bun run start --stitch --hook jaw-drop --demo assets/raw_cuts/video_1.mp4 --hook-dur 2.5 --demo-dur 4.0 --hook-text "my honest reaction after finding this app 💀" --cta-text "try it free on App Store 👇" --score
+
+# Full automated UGC pipeline (CLIProxyAPI script + Fish Audio TTS + ducked music):
+bun run start --stitch --hook shook --demo assets/raw_cuts/video_2.mp4 --generate-script --app-name "BitePal" --niche "grocery" --music assets/reference_videos/format-01-reaction-cz8qqcpn.mp4 --music-vol 0.20 --score
 ```
 ---
 

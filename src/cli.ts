@@ -1,7 +1,10 @@
 #!/usr/bin/env bun
+import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { CLIProxyClient } from './ai';
 import { VideoEditor } from './editor';
-import type { CaptionStyle, EditorOptions } from './types';
+import { UGCStitcher, listAvailableReactionHooks } from './stitcher';
+import type { CaptionStyle, EditorOptions, TextOverlaySegment } from './types';
 import { DEFAULT_CAPTIONS } from './types';
 
 function printHelp(): void {
@@ -34,6 +37,24 @@ Options:
   --concurrency, -c <num>  Number of concurrent FFmpeg renders (default: 3)
   --verbose, -v            Enable verbose output
   --help, -h               Show this help message
+
+UGC Stitcher Mode (Reaction Hook + App Demo + CTA):
+  --stitch                 Run UGC stitcher pipeline
+  --hook <path|emotion>    Reaction clip file or emotion keyword (e.g. jaw-drop, shook, hyped)
+  --demo <path>            App screen recording, website demo, or b-roll clip
+  --cta <path>             Optional CTA clip
+  --hook-dur <sec>         Duration of reaction hook (default: 3.0)
+  --demo-dur <sec>         Duration of demo clip (default: 8.0)
+  --hook-text <text>       Text overlay burned on hook clip (Green Zone positioned)
+  --cta-text <text>        Text overlay burned on CTA clip
+  --tts <text>             Voiceover script text (synthesized via Fish Audio)
+  --music <url|path>       TikTok trending music (downloaded via yt-dlp) or local MP3
+  --music-vol <num>        Background music ducking volume (default: 0.20)
+  --generate-script        Auto-generate 3-block script using CLIProxyAPI / Gemini
+  --app-name <name>        App name for AI script generation
+  --niche <niche>          Niche for AI script generation (e.g. utility, fitness, grocery)
+  --score                  Calculate virality score (0-100) using CLIProxyAPI / Gemini
+  --list-hooks             List all local reaction hook clips and emotions
 
 Video Naming Convention:
   • In caption folders: [YYYYMMDD]_[HHMMSS]_[RAW_VIDEO]_[STYLE]_[CAPTION_TAG].mp4
@@ -150,6 +171,40 @@ export function parseArgs(args: string[]): EditorOptions & { showHelp?: boolean 
     } else if (arg === '--secondary-style') {
       const val = args[++i]?.toLowerCase() as CaptionStyle;
       options.secondaryStyle = val;
+    } else if (arg === '--stitch') {
+      options.stitchMode = true;
+    } else if (arg === '--hook') {
+      options.hookClip = args[++i];
+      options.stitchMode = true;
+    } else if (arg === '--demo') {
+      options.demoClip = args[++i];
+      options.stitchMode = true;
+    } else if (arg === '--cta') {
+      options.ctaClip = args[++i];
+    } else if (arg === '--hook-dur') {
+      options.hookDuration = parseFloat(args[++i]);
+    } else if (arg === '--demo-dur') {
+      options.demoDuration = parseFloat(args[++i]);
+    } else if (arg === '--hook-text') {
+      options.hookText = args[++i];
+    } else if (arg === '--cta-text') {
+      options.ctaText = args[++i];
+    } else if (arg === '--tts') {
+      options.ttsText = args[++i];
+    } else if (arg === '--music') {
+      options.musicSource = args[++i];
+    } else if (arg === '--music-vol') {
+      options.musicVolume = parseFloat(args[++i]);
+    } else if (arg === '--generate-script') {
+      options.generateScript = true;
+    } else if (arg === '--app-name') {
+      options.appName = args[++i];
+    } else if (arg === '--niche') {
+      options.niche = args[++i];
+    } else if (arg === '--score') {
+      options.scoreVirality = true;
+    } else if (arg === '--list-hooks') {
+      options.listHooks = true;
     }
   }
 
@@ -162,6 +217,122 @@ async function run(): Promise<void> {
 
   if (parsed.showHelp) {
     printHelp();
+    process.exit(0);
+  }
+
+  if (parsed.listHooks) {
+    const hooks = listAvailableReactionHooks();
+    console.log('\n🎭 Available Local Reaction Hooks:');
+    for (const h of hooks) {
+      console.log(`  • ${h.emotion.padEnd(16)} -> ${h.name}`);
+    }
+    console.log(`Total: ${hooks.length} reaction clips ready for stitching.\n`);
+    process.exit(0);
+  }
+
+  if (parsed.stitchMode) {
+    const stitcher = new UGCStitcher();
+
+    let hookPath = parsed.hookClip || '';
+    if (hookPath && !fs.existsSync(hookPath)) {
+      // Try finding by emotion in local library
+      const hooks = listAvailableReactionHooks();
+      const found = hooks.find((h) => h.emotion === hookPath.toLowerCase() || h.name.includes(hookPath));
+      if (found) {
+        hookPath = found.path;
+      }
+    }
+    if (!hookPath) {
+      // Default to first available hook
+      const hooks = listAvailableReactionHooks();
+      if (hooks.length > 0) hookPath = hooks[0].path;
+      else hookPath = path.resolve(process.cwd(), 'assets/raw_cuts/video_1.mp4');
+    }
+
+    const demoPath = parsed.demoClip || path.resolve(process.cwd(), 'assets/raw_cuts/video_1.mp4');
+    const outPath = parsed.outputDir && parsed.outputDir.endsWith('.mp4')
+      ? path.resolve(parsed.outputDir)
+      : path.resolve(parsed.outputDir || 'output', `ugc_stitched_${Date.now()}.mp4`);
+
+    let hookText = parsed.hookText || '';
+    let ttsText = parsed.ttsText || '';
+    let ctaText = parsed.ctaText || '';
+
+    if (parsed.generateScript) {
+      console.log('\n🤖 Generating 3-block UGC script via CLIProxyAPI / Gemini...');
+      const ai = new CLIProxyClient();
+      const script = await ai.generateUGCScript({
+        appName: parsed.appName || 'MyApp',
+        niche: parsed.niche || 'productivity',
+      });
+      hookText = hookText || script.hookText;
+      ttsText = ttsText || script.demoVoiceover;
+      ctaText = ctaText || script.ctaText;
+      console.log(`  • Hook Text: "${hookText}"`);
+      console.log(`  • Demo VO: "${ttsText}"`);
+      console.log(`  • CTA: "${ctaText}"`);
+    }
+
+    const hookDur = parsed.hookDuration || 3.0;
+    const demoDur = parsed.demoDuration || 8.0;
+    const totalEst = hookDur + demoDur + (parsed.ctaClip ? 3.0 : 0);
+    const overlays: TextOverlaySegment[] = [];
+
+    if (hookText) {
+      overlays.push({
+        text: hookText,
+        start: 0,
+        end: hookDur,
+        placement: 'top',
+      });
+    }
+    if (ctaText) {
+      overlays.push({
+        text: ctaText,
+        start: Math.max(0, totalEst - 3.5),
+        end: totalEst,
+        placement: 'bottom',
+      });
+    }
+
+    console.log(`\n🎬 Stitching UGC Video:`);
+    console.log(`  • Hook: ${path.basename(hookPath)} (${hookDur}s)`);
+    console.log(`  • Demo: ${path.basename(demoPath)} (${demoDur}s)`);
+    if (parsed.ctaClip) console.log(`  • CTA Clip: ${path.basename(parsed.ctaClip)}`);
+    if (parsed.musicSource) console.log(`  • Music: ${parsed.musicSource} (ducked @ ${parsed.musicVolume || 0.2})`);
+    if (ttsText) console.log(`  • Voiceover TTS: "${ttsText.slice(0, 40)}..."`);
+
+    const res = await stitcher.stitch({
+      hookClip: hookPath,
+      demoClips: [demoPath],
+      ctaClip: parsed.ctaClip,
+      hookDuration: hookDur,
+      demoDuration: demoDur,
+      outputVideo: outPath,
+      textOverlays: overlays,
+      ttsText,
+      musicSource: parsed.musicSource,
+      musicVolume: parsed.musicVolume || 0.2,
+      verbose: parsed.verbose,
+    });
+
+    console.log(`\n✅ Stitched output rendered successfully: ${res.outputPath} (${res.totalDuration.toFixed(1)}s)`);
+
+    if (parsed.scoreVirality) {
+      console.log('\n📊 Scoring virality with Gemini / CLIProxyAPI...');
+      const ai = new CLIProxyClient();
+      const score = await ai.scoreVirality({
+        duration: res.totalDuration,
+        hookText: hookText || 'UGC video',
+        title: path.basename(outPath),
+      });
+      console.log(`  • Overall Score: ${score.overallScore}/100`);
+      console.log(`  • Hook Strength: ${score.hookStrength}/100`);
+      console.log(`  • Readability: ${score.textReadability}/100`);
+      console.log(`  • Top Strength: ${score.topStrength}`);
+      console.log(`  • Improvement Tip: ${score.improvementTip}`);
+    }
+
     process.exit(0);
   }
 
