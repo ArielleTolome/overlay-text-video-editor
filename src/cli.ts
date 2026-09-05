@@ -5,6 +5,7 @@ import { CLIProxyClient } from './ai';
 import { VideoEditor } from './editor';
 import { SessionMemory } from './session';
 import { UGCStitcher, listAvailableReactionHooks } from './stitcher';
+import { getReactionHookForEmotion, REACTION_HOOK_PRESETS } from './types';
 import type { CaptionStyle, EditorOptions, TextOverlaySegment } from './types';
 import { DEFAULT_CAPTIONS } from './types';
 
@@ -56,6 +57,8 @@ UGC Stitcher Mode (Reaction Hook + App Demo + CTA):
   --zoom-punch             Dynamic 1.08x punch-in zoom on hook beat
   --highlight <x,y,[r]>    Attention highlight ring at coordinates (e.g. 540,960,80)
   --self-eval              Run automated self-evaluation (volume, resolution, framerate, safe zone)
+  --auto-hook-text        Auto-select authentic reaction hook text matching clip emotion
+  --reaction-hooks        List proven reaction hook overlay text presets by emotion
   --session, --memory      Show persistent session memory & learned preferences
   --list-hooks             List all local reaction hook clips and emotions
   --app-name <name>        App name for AI script generation
@@ -220,6 +223,10 @@ export function parseArgs(args: string[]): EditorOptions & { showHelp?: boolean 
       options.selfEval = true;
     } else if (arg === '--session' || arg === '--memory') {
       options.showSession = true;
+    } else if (arg === '--auto-hook-text') {
+      options.autoHookText = true;
+    } else if (arg === '--reaction-hooks') {
+      options.listReactionHooks = true;
     } else if (arg === '--list-hooks') {
       options.listHooks = true;
     }
@@ -252,6 +259,18 @@ async function run(): Promise<void> {
     process.exit(0);
   }
 
+  if (parsed.listReactionHooks) {
+    console.log('\n🎭 Proven Reaction Hook Overlay Presets by Emotion:\n');
+    for (const [emotion, hooks] of Object.entries(REACTION_HOOK_PRESETS)) {
+      console.log(`  [${emotion.toUpperCase()}]:`);
+      for (const h of hooks) {
+        console.log(`    • "${h}"`);
+      }
+      console.log('');
+    }
+    process.exit(0);
+  }
+
   if (parsed.stitchMode) {
     const stitcher = new UGCStitcher();
 
@@ -277,8 +296,16 @@ async function run(): Promise<void> {
       : path.resolve(parsed.outputDir || 'output', `ugc_stitched_${Date.now()}.mp4`);
 
     let hookText = parsed.hookText || '';
-    let ttsText = parsed.ttsText || '';
+    if (hookText.toLowerCase() === 'auto' || parsed.autoHookText) {
+      const hookBaseName = path.basename(hookPath);
+      const detectedEmotion = hookBaseName.startsWith('hero-sp-')
+        ? hookBaseName.replace(/^hero-sp-\d+-/, '').replace(/\.mp4$/, '')
+        : 'jaw-drop';
+      hookText = getReactionHookForEmotion(detectedEmotion);
+      console.log(`  • Auto-selected Reaction Hook: "${hookText}" (for ${detectedEmotion})`);
+    }
     let ctaText = parsed.ctaText || '';
+    let ttsText = parsed.ttsText || '';
 
     if (parsed.generateScript) {
       console.log('\n🤖 Generating 3-block UGC script via CLIProxyAPI / Gemini...');

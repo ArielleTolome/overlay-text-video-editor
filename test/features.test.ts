@@ -2,9 +2,10 @@ import { describe, expect, it } from 'bun:test';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { applyZoomPunch, generateHighlightRingSvg } from '../src/animation';
-import { SelfEvaluator } from '../src/evaluator';
-import { analyzeAndComputeAutoGrade, COLOR_GRADE_PRESETS, getColorGradeFilter } from '../src/grade';
+import { getReactionHookForEmotion, REACTION_HOOK_PRESETS } from '../src/types';
 import { SessionMemory } from '../src/session';
+import { analyzeAndComputeAutoGrade, COLOR_GRADE_PRESETS, getColorGradeFilter } from '../src/grade';
+import { SelfEvaluator } from '../src/evaluator';
 
 describe('Video-Use Inspired Advanced Features', () => {
   const testDir = path.resolve(process.cwd(), 'output/test_features');
@@ -105,6 +106,22 @@ describe('Video-Use Inspired Advanced Features', () => {
       const fpsCheck = report.checks.find((c) => c.name.includes('30fps'));
       expect(fpsCheck).toBeDefined();
       expect(fpsCheck?.passed).toBe(true);
+    });
+  });
+
+  describe('5. Authentic Reaction Hook Presets', () => {
+    it('should provide authentic reaction overlays tailored to specific emotions', () => {
+      const emotions = ['jaw-drop', 'shook', 'belly-laugh', 'hyped', 'mind-blown', 'obsessed', 'emotional'];
+      for (const emotion of emotions) {
+        const hook = getReactionHookForEmotion(emotion);
+        expect(hook).toBeDefined();
+        expect(hook.length).toBeGreaterThan(10);
+        expect(REACTION_HOOK_PRESETS[emotion]?.length).toBeGreaterThanOrEqual(3);
+      }
+
+      expect(getReactionHookForEmotion('jaw-drop')).toContain('honest reaction');
+      expect(getReactionHookForEmotion('hyped')).toContain('gatekeeping');
+      expect(getReactionHookForEmotion('shook')).toContain('POV:');
     });
   });
 });

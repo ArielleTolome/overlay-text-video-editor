@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { getReactionHookForEmotion } from './types';
 import type { AIEngineConfig, ScriptConcept, ViralityReport } from './types';
 
 function runFFmpeg(args: string[]): Promise<{ stdout: string; stderr: string }> {
@@ -146,10 +147,9 @@ Create a high-converting 3-block video ad concept for "${appName}" in the "${nic
 Opening emotion: "${hookEmotion}". Target duration: ${targetDurationSeconds} seconds.
 
 The 3-block formula:
-1. Hook (0-3s): Unbelievable or confessional statement stopping the scroll.
+1. Hook (0-3s): Authentic reaction statement matching the "${hookEmotion}" emotion (e.g. "my honest reaction after finding this app", "wait... tell me why nobody told me this existed", "POV: you realize you've been doing it wrong"). Must sound like a real person reacting candidly on TikTok, NEVER corporate advertising.
 2. Demo Voiceover (3-12s): Showcasing the app screen / real-life action / grocery or hack.
 3. CTA (12-15s): Punchy call-to-action ("Search on App Store" or "Grab link in bio").
-
 Return ONLY valid JSON matching this schema:
 {
   "appName": "${appName}",
@@ -193,10 +193,10 @@ Return ONLY valid JSON matching this schema:
         appName,
         niche,
         hookEmotion,
-        hookText: `Lowkey thought ${appName} was fake until I tried it myself 😭💀`,
+        hookText: getReactionHookForEmotion(hookEmotion),
         demoVoiceover: `I literally just opened ${appName}, tapped scan on my screen, and it solved the entire thing in under two seconds.`,
         ctaText: `${appName}\non AppStore 👇`,
-        emphasisWords: ['fake', 'literally', 'two seconds', 'tried', 'solved']
+        emphasisWords: ['literally', 'two seconds', 'tried', 'solved']
       },
       grocery: {
         appName,

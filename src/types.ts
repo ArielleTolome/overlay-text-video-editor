@@ -177,6 +177,8 @@ export interface EditorOptions {
   highlight?: string;
   selfEval?: boolean;
   showSession?: boolean;
+  autoHookText?: boolean;
+  listReactionHooks?: boolean;
 }
 
 export interface RenderedVideoItem {
@@ -261,11 +263,81 @@ export interface BatchManifest {
   }[];
 }
 
+export const REACTION_HOOK_PRESETS: Record<string, string[]> = {
+  'jaw-drop': [
+    "my honest reaction after finding this app 💀",
+    "wait... tell me why nobody told me this existed 😭",
+    "my jaw literally hit the floor when it did this",
+    "I was today years old when I found out about this...",
+    "wait until the end because this makes zero sense 😳",
+  ],
+  'shook': [
+    "POV: you realize you've been doing it wrong your whole life 😳",
+    "I lowkey thought this was fake until I tried it myself",
+    "how did I not know about this until today?!",
+    "still trying to process that this actually works",
+    "tell me this isn't black magic...",
+  ],
+  'belly-laugh': [
+    "not me finding the ultimate life cheat code at 2am 💀",
+    "I'm never doing this manually ever again 😂",
+    "me laughing at everyone who still does this the hard way",
+    "the fact that this actually works has me crying 😭",
+  ],
+  'hyped': [
+    "gatekeeping this should literally be illegal 😭✨",
+    "stop whatever you're doing and watch this right now",
+    "okay but why is NO ONE talking about this app?!",
+    "this literally saved me 4 hours of work in 10 seconds",
+    "found the secret hack everyone on TikTok is using 💅",
+  ],
+  'mind-blown': [
+    "my brain genuinely cannot comprehend how this works 🤯",
+    "this one feature just changed the game forever",
+    "I tested 10 different apps and this one blew my mind",
+    "you have to see what happens when you tap this...",
+  ],
+  'obsessed': [
+    "I am officially never deleting this app",
+    "I've been using this for 3 days and I'm already obsessed",
+    "if you don't have this downloaded yet, what are you doing",
+    "this replaced 3 different apps on my phone",
+  ],
+  'emotional': [
+    "POV: after months of searching I finally found the one 🥹",
+    "I could literally cry tears of joy right now",
+    "this took all my anxiety away in under a minute",
+    "for anyone who's been struggling with this like me...",
+  ],
+  'unboxing': [
+    "let's see if the hype on TikTok is actually real 👀",
+    "everyone has been tagging me in this, so here we go",
+    "honest review: is it worth the hype?",
+  ],
+  'pov': [
+    "POV: you just discovered the best kept secret on the internet",
+    "POV: you finally found the hack that actually works",
+    "POV: your daily routine just got 10x easier",
+  ],
+  'reaction': [
+    "my unfiltered reaction to using this for the first time",
+    "I did NOT expect it to work this well",
+    "watch until the end to see what it actually did",
+  ],
+};
+
+export function getReactionHookForEmotion(emotion: string, index = 0): string {
+  const key = emotion.toLowerCase().trim();
+  const list = REACTION_HOOK_PRESETS[key] || REACTION_HOOK_PRESETS['jaw-drop']!;
+  const safeIndex = Math.abs(index) % list.length;
+  return list[safeIndex] || list[0]!;
+}
+
 export const DEFAULT_CAPTIONS: string[] = [
-  "lowkey thought this $1400 subsidy card was fake until my Walmart receipt literally said $0.00 😭💀",
-  "if u buy groceries and haven't claimed ur $910 grocery card for seniors yet u are literally throwing away money 😭",
-  "literally just got $1400 worth of groceries for free because of this subsidy card 😭🛒",
-  "stop paying full price for groceries when everyone is using this $910 grocery card 💀💸",
-  "pov: you finally claimed the $1400 subsidy card before it ran out 😭✨",
-  "i was today years old when i found out anyone can get this $910 grocery card 💀🛒",
+  "my honest reaction after finding this app 💀",
+  "POV: you realize you've been doing it wrong your whole life 😳",
+  "gatekeeping this should literally be illegal 😭✨",
+  "not me finding the ultimate life cheat code at 2am 💀",
+  "I was today years old when I found out about this...",
+  "how did I not know about this until today?!",
 ];
