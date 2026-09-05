@@ -111,6 +111,27 @@ output/
 ```
 
 ---
+## 📦 Install as an AI Agent Skill (OpenClaw, Hermes, Grokbot, Codex, Claude)
+
+Install this video editor directly into your AI coding agent with a single command:
+
+```bash
+# ⚡ Automated One-Liner (Auto-detects OpenClaw, Hermes, Grokbot, Claude Code, Codex):
+curl -fsSL https://raw.githubusercontent.com/ArielleTolome/overlay-text-video-editor/master/install.sh | bash
+
+# 🚀 Universal Skills CLI:
+npx skills add ArielleTolome/overlay-text-video-editor --all
+
+# 🐾 OpenClaw / ClawHub:
+claw add ArielleTolome/overlay-text-video-editor
+
+# 🪽 Hermes Agent:
+hermes skill add ArielleTolome/overlay-text-video-editor
+```
+
+👉 **For manual instructions, see [`install.md`](./install.md)**
+
+---
 
 ## 📋 Copy & Paste AI Agent Prompts (Claude, Grokbot, Codex, Cursor)
 
