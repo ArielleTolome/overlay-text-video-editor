@@ -65,6 +65,19 @@ export class UGCStitcher {
     }
 
     const vf = 'scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1,fps=30';
+    const { promise: audioPromise, resolve: resolveAudio } = Promise.withResolvers<boolean>();
+    const probeProc = spawn('ffprobe', ['-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=codec_name', '-of', 'json', inputPath]);
+    let probeOut = '';
+    probeProc.stdout.on('data', (d) => { probeOut += d.toString(); });
+    probeProc.on('close', () => {
+      try {
+        const parsed = JSON.parse(probeOut);
+        resolveAudio(Boolean(parsed.streams && parsed.streams.length > 0));
+      } catch {
+        resolveAudio(false);
+      }
+    });
+    const hasAudio = await audioPromise;
 
     if (speed !== 1.0) {
       // Two-pass speed up
@@ -76,32 +89,75 @@ export class UGCStitcher {
 
       const ptsMult = (1 / speed).toFixed(4);
       const speedVf = `setpts=${ptsMult}*PTS,${vf}`;
-      await runFFmpeg([
-        '-y', '-i', tempTrim,
-        '-vf', speedVf,
-        '-an',
-        '-c:v', 'libx264',
-        '-preset', 'veryfast',
-        '-crf', '20',
-        '-pix_fmt', 'yuv420p',
-        outputPath
-      ]);
+
+      if (hasAudio) {
+        await runFFmpeg([
+          '-y', '-i', tempTrim,
+          '-vf', speedVf,
+          '-af', `atempo=${speed.toFixed(4)}`,
+          '-c:v', 'libx264',
+          '-preset', 'veryfast',
+          '-crf', '20',
+          '-c:a', 'aac',
+          '-ar', '44100',
+          '-ac', '2',
+          '-b:a', '192k',
+          '-pix_fmt', 'yuv420p',
+          outputPath
+        ]);
+      } else {
+        await runFFmpeg([
+          '-y', '-i', tempTrim,
+          '-f', 'lavfi', '-i', 'anullsrc=channel_layout=stereo:sample_rate=44100',
+          '-vf', speedVf,
+          '-c:v', 'libx264',
+          '-preset', 'veryfast',
+          '-crf', '20',
+          '-c:a', 'aac',
+          '-b:a', '192k',
+          '-shortest',
+          '-pix_fmt', 'yuv420p',
+          outputPath
+        ]);
+      }
       if (fs.existsSync(tempTrim)) fs.unlinkSync(tempTrim);
     } else {
-      const args = ['-y', '-ss', start.toFixed(2), '-i', inputPath];
-      if (duration) args.push('-t', duration.toFixed(2));
-      args.push(
-        '-vf', vf,
-        '-an',
-        '-c:v', 'libx264',
-        '-preset', 'veryfast',
-        '-crf', '20',
-        '-pix_fmt', 'yuv420p',
-        outputPath
-      );
-      await runFFmpeg(args);
+      if (hasAudio) {
+        const args = ['-y', '-ss', start.toFixed(2), '-i', inputPath];
+        if (duration) args.push('-t', duration.toFixed(2));
+        args.push(
+          '-vf', vf,
+          '-c:v', 'libx264',
+          '-preset', 'veryfast',
+          '-crf', '20',
+          '-c:a', 'aac',
+          '-ar', '44100',
+          '-ac', '2',
+          '-b:a', '192k',
+          '-pix_fmt', 'yuv420p',
+          outputPath
+        );
+        await runFFmpeg(args);
+      } else {
+        const args = [
+          '-y', '-ss', start.toFixed(2), '-i', inputPath,
+          '-f', 'lavfi', '-i', 'anullsrc=channel_layout=stereo:sample_rate=44100'
+        ];
+        if (duration) args.push('-t', duration.toFixed(2));
+        args.push(
+          '-vf', vf,
+          '-c:v', 'libx264',
+          '-preset', 'veryfast',
+          '-crf', '20',
+          '-c:a', 'aac',
+          '-b:a', '192k',
+          '-shortest',
+          '-pix_fmt', 'yuv420p',
+          outputPath
+        );
+        await runFFmpeg(args);
+      }
     }
-
     return outputPath;
   }
 
