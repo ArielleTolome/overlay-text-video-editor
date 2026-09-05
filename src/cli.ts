@@ -249,7 +249,7 @@ async function run(): Promise<void> {
       else hookPath = path.resolve(process.cwd(), 'assets/raw_cuts/video_1.mp4');
     }
 
-    const demoPath = parsed.demoClip || path.resolve(process.cwd(), 'assets/raw_cuts/video_1.mp4');
+    const demoClips: string[] = parsed.demoClip ? [parsed.demoClip] : [];
     const outPath = parsed.outputDir && parsed.outputDir.endsWith('.mp4')
       ? path.resolve(parsed.outputDir)
       : path.resolve(parsed.outputDir || 'output', `ugc_stitched_${Date.now()}.mp4`);
@@ -273,9 +273,9 @@ async function run(): Promise<void> {
       console.log(`  • CTA: "${ctaText}"`);
     }
 
-    const hookDur = parsed.hookDuration || 3.0;
+    const hookDur = parsed.hookDuration;
     const demoDur = parsed.demoDuration || 8.0;
-    const totalEst = hookDur + demoDur + (parsed.ctaClip ? 3.0 : 0);
+    const totalEst = (hookDur || 3.0) + (demoClips.length > 0 ? demoDur : 0) + (parsed.ctaClip ? 3.0 : 0);
     const overlays: TextOverlaySegment[] = [];
 
     if (hookText) {
@@ -295,16 +295,18 @@ async function run(): Promise<void> {
       });
     }
 
-    console.log(`\n🎬 Stitching UGC Video:`);
-    console.log(`  • Hook: ${path.basename(hookPath)} (${hookDur}s)`);
-    console.log(`  • Demo: ${path.basename(demoPath)} (${demoDur}s)`);
+    console.log(`\n🎬 Processing UGC Video:`);
+    console.log(`  • Primary Clip: ${path.basename(hookPath)}${hookDur ? ` (${hookDur}s)` : ''}`);
+    if (demoClips.length > 0) {
+      console.log(`  • 2nd Video (Demo): ${path.basename(demoClips[0]!)} (${demoDur}s)`);
+    }
     if (parsed.ctaClip) console.log(`  • CTA Clip: ${path.basename(parsed.ctaClip)}`);
     if (parsed.musicSource) console.log(`  • Music: ${parsed.musicSource} (ducked @ ${parsed.musicVolume || 0.2})`);
     if (ttsText) console.log(`  • Voiceover TTS: "${ttsText.slice(0, 40)}..."`);
 
     const res = await stitcher.stitch({
       hookClip: hookPath,
-      demoClips: [demoPath],
+      demoClips,
       ctaClip: parsed.ctaClip,
       hookDuration: hookDur,
       demoDuration: demoDur,

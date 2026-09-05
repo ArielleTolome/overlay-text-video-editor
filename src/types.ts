@@ -38,7 +38,7 @@ export interface TextOverlaySegment {
 
 export interface StitchOptions {
   hookClip: string | ClipSegment;
-  demoClips: (string | ClipSegment)[];
+  demoClips?: (string | ClipSegment)[];
   ctaClip?: string | ClipSegment;
   hookDuration?: number;
   demoDuration?: number;

@@ -196,9 +196,9 @@ export class UGCStitcher {
   async stitch(options: StitchOptions): Promise<{ outputPath: string; totalDuration: number }> {
     const {
       hookClip,
-      demoClips,
+      demoClips = [],
       ctaClip,
-      hookDuration = 3.0,
+      hookDuration,
       demoDuration = 8.0,
       ctaDuration = 3.0,
       outputVideo,
@@ -218,7 +218,11 @@ export class UGCStitcher {
       // 1. Prepare Reaction Hook Clip
       const hookPath = typeof hookClip === 'string' ? hookClip : hookClip.path;
       const hookStart = typeof hookClip === 'object' && hookClip.start !== undefined ? hookClip.start : 0;
-      const hookDur = typeof hookClip === 'object' && hookClip.duration !== undefined ? hookClip.duration : hookDuration;
+      const isMultiSegment = demoClips.length > 0 || Boolean(ctaClip);
+      const defaultHookDur = isMultiSegment ? 3.0 : undefined;
+      const hookDur = typeof hookClip === 'object' && hookClip.duration !== undefined
+        ? hookClip.duration
+        : (hookDuration !== undefined ? hookDuration : defaultHookDur);
       const hookOut = path.join(workDir, '01_hook.mp4');
 
       if (verbose) console.log(`[Stitcher] Preparing Hook segment from ${path.basename(hookPath)} (${hookDur}s)...`);
@@ -268,10 +272,13 @@ export class UGCStitcher {
         preparedSegments.push(ctaOut);
       }
 
-      // 4. Concat video clips
-      const rawConcatVideo = path.join(workDir, 'concatenated_raw.mp4');
-      await this.concatSegments(preparedSegments, rawConcatVideo);
-
+      // 4. Concat video clips if multi-segment
+      let rawConcatVideo = preparedSegments[0]!;
+      if (preparedSegments.length > 1) {
+        const concatOut = path.join(workDir, 'concatenated_raw.mp4');
+        await this.concatSegments(preparedSegments, concatOut);
+        rawConcatVideo = concatOut;
+      }
       // 5. Determine total video duration
       const probeProc = spawn('ffprobe', [
         '-v', 'error',
